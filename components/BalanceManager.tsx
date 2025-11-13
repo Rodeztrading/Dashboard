@@ -14,30 +14,38 @@ const BalanceManager: React.FC<BalanceManagerProps> = ({ initialBalance, current
     const balance = parseFloat(inputBalance);
     if (!isNaN(balance) && balance > 0) {
       onSetBalance(balance);
+      setInputBalance('');
     }
   };
 
   if (initialBalance === null) {
     return (
-      <div className="futuristic-panel mb-4">
-        <h2 className="text-xl font-bold text-glow-cyan mb-4 uppercase">Iniciar Sesión</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center gap-4">
-          <label htmlFor="initial-balance" className="font-semibold whitespace-nowrap">Capital Inicial ($):</label>
-          <input
-            type="number"
-            id="initial-balance"
-            value={inputBalance}
-            onChange={(e) => setInputBalance(e.target.value)}
-            className="futuristic-input rounded-md p-2 w-full sm:w-48"
-            placeholder="Ej: 1000"
-            required
-            min="1"
-            step="any"
-          />
-          <button type="submit" className="futuristic-button font-bold py-2 px-4 rounded-lg w-full sm:w-auto">
-            Establecer Capital
-          </button>
-        </form>
+      <div className="futuristic-panel p-4">
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-glow-cyan uppercase">Iniciar Sesión de Trading</h3>
+            <p className="text-text-secondary text-sm mt-1">Establece tu capital inicial para comenzar a registrar operaciones</p>
+          </div>
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="flex items-center gap-2">
+              <label htmlFor="initial-balance" className="font-semibold whitespace-nowrap text-sm">Capital ($):</label>
+              <input
+                type="number"
+                id="initial-balance"
+                value={inputBalance}
+                onChange={(e) => setInputBalance(e.target.value)}
+                className="futuristic-input rounded-md p-2 w-32"
+                placeholder="1000"
+                min="1"
+                step="any"
+                required
+              />
+            </div>
+            <button type="submit" className="futuristic-button font-bold py-2 px-4 rounded-lg whitespace-nowrap">
+              Iniciar Sesión
+            </button>
+          </form>
+        </div>
       </div>
     );
   }

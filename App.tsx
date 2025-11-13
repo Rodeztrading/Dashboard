@@ -7,6 +7,7 @@ import Sidebar from './components/Sidebar';
 import DashboardHeader from './components/DashboardHeader';
 import Settings from './components/Settings';
 import Sniper from './components/Sniper';
+import SessionReviewModal from './components/SessionReviewModal';
 import type { VisualTrade } from './types';
 
 const App: React.FC = () => {
@@ -25,10 +26,12 @@ const App: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activeView, setActiveView] = useState('dashboard');
   const [isTradeModalOpen, setIsTradeModalOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
   const [userProfile, setUserProfile] = useState({
-    name: 'Malinda Holloway',
-    handle: '@malindah',
-    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d'
+    name: 'Sniper Trader',
+    handle: '@sniper_trader',
+    avatar: 'https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?w=400&h=400&fit=crop'
   });
   const [tradingPlan, setTradingPlan] = useState('');
 
@@ -53,6 +56,7 @@ const App: React.FC = () => {
   const handleSetBalance = (balance: number) => {
     setInitialBalance(balance);
     setCurrentBalance(balance);
+    setSessionStartTime(Date.now());
   };
 
   const handleSaveTrade = (trade: VisualTrade) => {
@@ -73,12 +77,18 @@ const App: React.FC = () => {
   };
 
   const handleEndSession = () => {
-    if (window.confirm('¿Confirmar fin de la sesión? Se reiniciará el capital para una nueva sesión. El historial de operaciones se conservará.')) {
-      alert(`Sesión terminada. Saldo final: $${currentBalance?.toFixed(2)}`);
-      setInitialBalance(null);
-      setCurrentBalance(null);
-      setActiveView('dashboard');
+    if (window.confirm('¿Confirmar fin de la sesión? Se generará un análisis de IA y luego se reiniciará el capital.')) {
+      setIsReviewModalOpen(true);
     }
+  };
+
+  const handleCloseReviewAndReset = () => {
+    alert(`Sesión terminada. Saldo final: $${currentBalance?.toFixed(2)}`);
+    setInitialBalance(null);
+    setCurrentBalance(null);
+    setSessionStartTime(null);
+    setIsReviewModalOpen(false);
+    setActiveView('dashboard');
   };
 
   const handleDateSelect = (date: Date | null) => {
@@ -104,27 +114,31 @@ const App: React.FC = () => {
               currentBalance={currentBalance}
               onSetBalance={handleSetBalance}
             />
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center futuristic-panel p-4">
-                <div>
-                    <h3 className="text-lg font-bold uppercase">Consola de Operaciones</h3>
-                    <p className="text-text-secondary mt-1 text-sm">Registra una nueva operación o revisa tu historial.</p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3 justify-end">
-                    <button 
-                        onClick={() => setIsTradeModalOpen(true)}
-                        className="futuristic-button font-bold py-2 px-4 rounded-lg"
-                        disabled={!isSessionActive}
-                    >
-                        + Registrar Operación
-                    </button>
-                    <button 
-                        onClick={handleEndSession}
-                        className="futuristic-button-red font-bold py-2 px-4 rounded-lg"
-                        disabled={!isSessionActive}
-                    >
-                        Terminar Sesión
-                    </button>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center futuristic-panel p-4">
+              <div>
+                <h3 className="text-lg font-bold uppercase">Consola de Operaciones</h3>
+                <p className="text-text-secondary mt-1 text-sm">
+                  {isSessionActive ? 'Registra una nueva operación o revisa tu historial.' : 'Establece un capital para registrar operaciones.'}
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 justify-end">
+                <button 
+                  onClick={() => setIsTradeModalOpen(true)}
+                  className={`font-bold py-2 px-4 rounded-lg ${isSessionActive ? 'futuristic-button' : 'bg-gray-700 text-gray-400 cursor-not-allowed'}`}
+                  disabled={!isSessionActive}
+                  title={!isSessionActive ? 'Establece un capital para registrar operaciones' : ''}
+                >
+                  + Registrar Operación
+                </button>
+                <button 
+                  onClick={handleEndSession}
+                  className={`font-bold py-2 px-4 rounded-lg ${isSessionActive ? 'futuristic-button-red' : 'bg-gray-700 text-gray-400 cursor-not-allowed'}`}
+                  disabled={!isSessionActive}
+                  title={!isSessionActive ? 'No hay sesión activa' : ''}
+                >
+                  Terminar Sesión
+                </button>
+              </div>
             </div>
             <Dashboard trades={trades} initialBalance={initialBalance} selectedDate={selectedDate} />
             <TradeHistory trades={trades} selectedDate={selectedDate} onClearFilter={() => setSelectedDate(null)} />
@@ -139,6 +153,8 @@ const App: React.FC = () => {
     }
   };
 
+  const sessionTrades = trades.filter(t => sessionStartTime && new Date(t.id).getTime() >= sessionStartTime);
+
   return (
     <div className="grid grid-cols-[80px_1fr] md:grid-cols-[280px_1fr] h-screen bg-background-dark text-text-primary font-sans">
       <Sidebar 
@@ -152,26 +168,8 @@ const App: React.FC = () => {
       />
 
       <main className="overflow-y-auto p-4 flex flex-col gap-4">
-        {isSessionActive ? (
-          <>
-            <DashboardHeader viewTitle={activeView} />
-            {renderContent()}
-          </>
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <div className="w-full max-w-xl mx-auto space-y-4">
-                <div className="text-center futuristic-panel">
-                    <h2 className="text-2xl font-bold text-glow-cyan uppercase">Conexión a la Consola de Trading</h2>
-                    <p className="text-gray-300 mt-2">Establece tu capital para iniciar la sesión.</p>
-                </div>
-                <BalanceManager 
-                    initialBalance={initialBalance}
-                    currentBalance={currentBalance}
-                    onSetBalance={handleSetBalance}
-                />
-            </div>
-          </div>
-        )}
+        <DashboardHeader viewTitle={activeView} />
+        {renderContent()}
       </main>
 
       {isTradeModalOpen && (
@@ -184,6 +182,17 @@ const App: React.FC = () => {
                  />
               </div>
           </div>
+      )}
+      
+      {isReviewModalOpen && initialBalance && currentBalance && (
+        <SessionReviewModal
+          isOpen={isReviewModalOpen}
+          onClose={handleCloseReviewAndReset}
+          sessionTrades={sessionTrades}
+          initialBalance={initialBalance}
+          finalBalance={currentBalance}
+          tradingPlan={tradingPlan}
+        />
       )}
     </div>
   );

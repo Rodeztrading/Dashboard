@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 interface SettingsProps {
     userProfile: {
@@ -14,13 +14,30 @@ interface SettingsProps {
 const Settings: React.FC<SettingsProps> = ({ userProfile, onSave, tradingPlan, onTradingPlanChange }) => {
     const [name, setName] = useState(userProfile.name);
     const [handle, setHandle] = useState(userProfile.handle);
+    const [avatar, setAvatar] = useState(userProfile.avatar);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         onTradingPlanChange(e.target.value);
     };
 
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAvatar(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleSaveChanges = () => {
-        onSave({ ...userProfile, name, handle });
+        onSave({ name, handle, avatar });
         alert('Perfil actualizado!');
     };
 
@@ -49,12 +66,25 @@ const Settings: React.FC<SettingsProps> = ({ userProfile, onSave, tradingPlan, o
                             className="futuristic-input w-full rounded-md p-2"
                         />
                     </div>
-                     <div>
+                    <div>
                         <label className="block text-sm font-medium text-text-secondary mb-1">Avatar</label>
                         <div className="flex items-center gap-4">
-                            <img src={userProfile.avatar} alt="Avatar" className="w-16 h-16 rounded-full" />
-                            <button className="futuristic-button text-sm py-1 px-3 rounded-md disabled:opacity-50" disabled>Cambiar</button>
+                            <img src={avatar} alt="Avatar" className="w-16 h-16 rounded-full border-2 border-cyan/50" />
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
+                            <button 
+                                onClick={handleAvatarClick}
+                                className="futuristic-button text-sm py-1 px-3 rounded-md"
+                            >
+                                Cambiar
+                            </button>
                         </div>
+                        <p className="text-xs text-text-secondary mt-2">Haz clic en "Cambiar" para seleccionar una nueva imagen</p>
                     </div>
                     <button
                         onClick={handleSaveChanges}

@@ -97,6 +97,15 @@ const CircularProgress: React.FC<{ percentage: number; label: string }> = ({ per
 
 const Dashboard: React.FC<DashboardProps> = ({ trades, initialBalance, selectedDate }) => {
   
+  if (!initialBalance) {
+    return (
+        <div className="futuristic-panel text-center py-10">
+            <h3 className="text-lg font-bold uppercase text-glow-cyan mb-2">Estadísticas de Sesión</h3>
+            <p className="text-text-secondary">Inicia una nueva sesión estableciendo tu capital para ver las estadísticas de rendimiento en tiempo real.</p>
+        </div>
+    );
+  }
+
   const filteredTrades = React.useMemo(() => {
     if (!selectedDate) return trades;
     return trades.filter(trade => {
@@ -136,10 +145,6 @@ const Dashboard: React.FC<DashboardProps> = ({ trades, initialBalance, selectedD
     return { wins, losses, winRate, totalTrades, totalPL, plHistory, callWinRate, putWinRate, winsHistory, lossesHistory };
   }, [filteredTrades]);
 
-  if (!initialBalance) {
-    return null;
-  }
-  
   const dashboardTitle = selectedDate 
     ? `Resumen del Día: ${selectedDate.toLocaleDateString('es-ES')}`
     : "Resumen General (Todo el Historial)";
