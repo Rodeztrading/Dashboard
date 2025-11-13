@@ -1,0 +1,5 @@
+{
+  "name": "Visual AI Trading Journal",
+  "description": "An advanced trading journal that uses AI to analyze user-uploaded chart images, providing pre-trade analysis and post-session feedback to help traders learn and improve.",
+  "requestFramePermissions": []
+}
