@@ -1,13 +1,15 @@
 import React from 'react';
 import type { VisualTrade } from '../types';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface TradeHistoryProps {
   trades: VisualTrade[];
   selectedDate: Date | null;
   onClearFilter: () => void;
+  onViewTrade: (trade: VisualTrade, index: number, tradeList: VisualTrade[]) => void;
 }
 
-const TradeHistory: React.FC<TradeHistoryProps> = ({ trades, selectedDate, onClearFilter }) => {
+const TradeHistory: React.FC<TradeHistoryProps> = ({ trades, selectedDate, onClearFilter, onViewTrade }) => {
 
   const filteredTrades = React.useMemo(() => {
     if (!selectedDate) return trades;
@@ -17,15 +19,19 @@ const TradeHistory: React.FC<TradeHistoryProps> = ({ trades, selectedDate, onCle
     });
   }, [trades, selectedDate]);
 
-  const tradeList = filteredTrades.map((trade) => {
+  const tradeList = filteredTrades.map((trade, index) => {
     const profitOrLoss = trade.outcome === 'WIN' 
         ? trade.amountInvested * (trade.payout / 100)
         : -trade.amountInvested;
     const originalIndex = trades.findIndex(t => t.id === trade.id);
 
     return (
-      <div key={trade.id} className="futuristic-panel p-3">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
+      <div 
+        key={trade.id} 
+        className="futuristic-panel p-3 transition-all duration-300 hover:border-cyan hover:bg-cyan/5 cursor-pointer"
+        onClick={() => onViewTrade(trade, index, filteredTrades)}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
           <div className="space-y-2">
             <h3 className="font-bold text-center mb-1 text-glow-cyan text-sm">OPERACIÓN #{originalIndex + 1}</h3>
             <img src={`data:${trade.tradeImage.mimeType};base64,${trade.tradeImage.base64}`} alt="Trade" className="rounded-lg border-2 border-cyan/20" />
@@ -37,6 +43,12 @@ const TradeHistory: React.FC<TradeHistoryProps> = ({ trades, selectedDate, onCle
                 <p className="text-xs mt-2 text-gray-400">Invertido: ${trade.amountInvested.toFixed(2)} @ {trade.payout}%</p>
                 <p className="text-sm mt-1">P/L: <span className={profitOrLoss >= 0 ? 'text-cyan' : 'text-magenta'}>{profitOrLoss >= 0 ? '+' : ''}${profitOrLoss.toFixed(2)}</span></p>
             </div>
+            {trade.aiAnalysis && (
+              <div className="bg-background-dark/50 p-2 rounded-md border border-cyan/20 text-xs">
+                <h4 className="font-bold text-cyan mb-1">Análisis del Observador IA</h4>
+                <MarkdownRenderer content={trade.aiAnalysis} />
+              </div>
+            )}
           </div>
         </div>
       </div>

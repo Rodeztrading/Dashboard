@@ -1,198 +1,174 @@
 import React from 'react';
 import type { VisualTrade } from '../types';
 
-interface DashboardProps {
-  trades: VisualTrade[];
-  initialBalance: number | null;
-  selectedDate: Date | null;
+interface ChartDataPoint {
+    date: Date;
+    dailyPnl: number;
+    cumulativePnl: number;
 }
 
-const SparkLine: React.FC<{ data: number[] }> = ({ data }) => {
-  if (data.length < 2) return null;
-  const width = 100;
-  const height = 30;
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min === 0 ? 1 : max - min;
-  const points = data.map((d, i) => `${(i / (data.length - 1)) * width},${height - ((d - min) / range) * height}`).join(' ');
-
-  return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-8 mt-2" preserveAspectRatio="none">
-      <polyline points={points} fill="none" stroke="var(--cyan)" strokeWidth="2" />
-    </svg>
-  );
-};
-
-const StatCard: React.FC<{ label: string; value: string; data: number[]; colorClass?: string }> = ({ label, value, data, colorClass = 'text-glow-cyan' }) => (
-  <div className="bg-background-dark/50 p-4 border border-border-color rounded-lg">
-    <p className="text-sm text-text-secondary uppercase tracking-wider">{label}</p>
-    <p className={`text-3xl font-black ${colorClass}`}>{value}</p>
-    <SparkLine data={data} />
-  </div>
-);
-
-const StatisticsChart: React.FC<{ plHistory: number[] }> = ({ plHistory }) => {
-    const data = plHistory;
+const HistoricalPerformanceChart: React.FC<{ data: ChartDataPoint[] }> = ({ data }) => {
     const width = 500;
-    const height = 200;
-    const padding = 20;
+    const height = 300;
+    const padding = { top: 20, right: 20, bottom: 60, left: 50 };
 
-    if (data.length < 2) {
-        return <div className="flex items-center justify-center h-full text-text-secondary">No hay suficientes datos para el gráfico.</div>;
+    if (data.length === 0) {
+        return <div className="flex items-center justify-center h-full text-text-secondary">No hay datos para mostrar.</div>;
     }
 
-    const max = Math.max(...data, 0);
-    const min = Math.min(...data, 0);
-    const range = max - min === 0 ? 1 : max - min;
+    const equityHeight = height * 0.6;
+    const volumeHeight = height * 0.3;
+
+    // Equity Curve Calculations
+    const cumulativePnls = data.map(d => d.cumulativePnl);
+    const maxCumulativePnl = Math.max(0, ...cumulativePnls);
+    const minCumulativePnl = Math.min(0, ...cumulativePnls);
+    const equityRange = maxCumulativePnl - minCumulativePnl === 0 ? 1 : maxCumulativePnl - minCumulativePnl;
     
-    const points = data.map((d, i) => `${padding + (i / (data.length - 1)) * (width - 2*padding)},${height - padding - ((d - min) / range) * (height - 2*padding)}`).join(' ');
-    const areaPoints = `${padding},${height - padding} ${points} ${padding + (width-2*padding)},${height-padding}`;
-    
+    const equityYScale = (pnl: number) => padding.top + equityHeight - ((pnl - minCumulativePnl) / equityRange) * equityHeight;
+    const equityPath = data.map((d, i) => `${padding.left + i * ((width - padding.left - padding.right) / (data.length -1 || 1))},${equityYScale(d.cumulativePnl)}`).join(' L ');
+    const areaPath = `M ${padding.left},${equityYScale(data[0].cumulativePnl)} L ${equityPath} L ${width - padding.right},${equityYScale(0)} L ${padding.left},${equityYScale(0)} Z`;
+
+
+    // Volume Bar Calculations
+    const dailyPnls = data.map(d => d.dailyPnl);
+    const maxDailyPnl = Math.max(0, ...dailyPnls);
+    const minDailyPnl = Math.min(0, ...dailyPnls);
+    const maxAbsDailyPnl = Math.max(maxDailyPnl, Math.abs(minDailyPnl));
+
+    const barWidth = (width - padding.left - padding.right) / (data.length * 1.5);
+
     return (
         <div className="h-full">
-            <h3 className="text-lg font-bold uppercase mb-2">Estadísticas de P/L</h3>
-             <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+            <h3 className="text-lg font-bold uppercase mb-2 text-center">Curva de Capital y P/L Diario</h3>
+            <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+                {/* Y-Axis labels for Equity Curve */}
+                <text x={padding.left - 10} y={padding.top} dy="0.3em" fill="var(--text-secondary)" textAnchor="end" fontSize="10">${maxCumulativePnl.toFixed(0)}</text>
+                <text x={padding.left - 10} y={equityYScale(0)} dy="0.3em" fill="var(--text-secondary)" textAnchor="end" fontSize="10">$0</text>
+                <text x={padding.left - 10} y={padding.top + equityHeight} dy="0.3em" fill="var(--text-secondary)" textAnchor="end" fontSize="10">${minCumulativePnl.toFixed(0)}</text>
+                
+                {/* Equity Curve Area and Line */}
                 <defs>
-                    <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="var(--cyan)" stopOpacity="0.4"/>
+                    <linearGradient id="equityGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--cyan)" stopOpacity="0.3"/>
                         <stop offset="100%" stopColor="var(--cyan)" stopOpacity="0"/>
                     </linearGradient>
                 </defs>
-                <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="var(--border-color)" strokeWidth="1"/>
-                <line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="var(--border-color)" strokeWidth="1"/>
-                <polyline points={areaPoints} fill="url(#areaGradient)" />
-                <polyline points={points} fill="none" stroke="var(--cyan)" strokeWidth="2" />
+                <path d={`M ${padding.left},${equityYScale(data[0].cumulativePnl)} L ${equityPath}`} stroke="var(--cyan)" strokeWidth="2" fill="none" />
+                <path d={`M ${padding.left},${equityYScale(data[0].cumulativePnl)} L ${equityPath} L ${width - padding.right},${padding.top + equityHeight} L ${padding.left},${padding.top + equityHeight} Z`} fill="url(#equityGradient)" />
+
+
+                {/* Volume Bars */}
+                {data.map((d, i) => {
+                    const x = padding.left + i * (barWidth * 1.5);
+                    const barHeight = (Math.abs(d.dailyPnl) / maxAbsDailyPnl) * (volumeHeight);
+                    const y = height - padding.bottom - barHeight;
+                    const fill = d.dailyPnl >= 0 ? "var(--cyan)" : "var(--magenta)";
+                    
+                    return (
+                        <g key={i}>
+                            <rect
+                                x={x}
+                                y={y}
+                                width={barWidth}
+                                height={barHeight}
+                                fill={fill}
+                            />
+                            <text
+                                x={x + barWidth / 2}
+                                y={y - 4}
+                                fill="var(--text-secondary)"
+                                textAnchor="middle"
+                                fontSize="8"
+                                fontWeight="bold"
+                            >
+                                {`$${d.dailyPnl.toFixed(2)}`}
+                            </text>
+                            <text x={x + barWidth / 2} y={height - padding.bottom + 15} fill="var(--text-secondary)" textAnchor="middle" fontSize="8">
+                                {d.date.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })}
+                            </text>
+                        </g>
+                    );
+                })}
+
+                {/* Y-Axis labels for Volume */}
+                 <text x={padding.left - 10} y={height - padding.bottom - volumeHeight} dy="0.3em" fill="var(--text-secondary)" textAnchor="end" fontSize="10">${maxAbsDailyPnl.toFixed(0)}</text>
+                 <text x={padding.left - 10} y={height - padding.bottom} dy="0.3em" fill="var(--text-secondary)" textAnchor="end" fontSize="10">$0</text>
             </svg>
         </div>
     );
 };
 
-const CircularProgress: React.FC<{ percentage: number; label: string }> = ({ percentage, label }) => {
-    const radius = 50;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (percentage / 100) * circumference;
 
-    return (
-        <div className="flex flex-col items-center">
-            <svg className="w-32 h-32 transform -rotate-90">
-                <circle className="text-border-color" strokeWidth="8" stroke="currentColor" fill="transparent" r={radius} cx="64" cy="64" />
-                <circle
-                    className="text-cyan"
-                    strokeWidth="8"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={offset}
-                    strokeLinecap="round"
-                    stroke="currentColor"
-                    fill="transparent"
-                    r={radius}
-                    cx="64"
-                    cy="64"
-                />
-            </svg>
-            <span className="text-xl font-bold text-white -mt-20">{percentage.toFixed(1)}%</span>
-            <p className="mt-16 text-xs uppercase text-text-secondary">{label}</p>
-        </div>
-    );
-};
+const StatCard: React.FC<{ label: string; value: string; subValue?: string; colorClass?: string }> = ({ label, value, subValue, colorClass = 'text-glow-cyan' }) => (
+  <div className="bg-background-dark/50 p-4 border border-border-color rounded-lg text-center">
+    <p className="text-sm text-text-secondary uppercase tracking-wider">{label}</p>
+    <p className={`text-3xl font-black ${colorClass}`}>{value}</p>
+    {subValue && <p className="text-xs text-text-secondary mt-1">{subValue}</p>}
+  </div>
+);
 
-const Dashboard: React.FC<DashboardProps> = ({ trades, initialBalance, selectedDate }) => {
-  
-  if (!initialBalance) {
-    return (
-        <div className="futuristic-panel text-center py-10">
-            <h3 className="text-lg font-bold uppercase text-glow-cyan mb-2">Estadísticas de Sesión</h3>
-            <p className="text-text-secondary">Inicia una nueva sesión estableciendo tu capital para ver las estadísticas de rendimiento en tiempo real.</p>
-        </div>
-    );
-  }
 
-  const filteredTrades = React.useMemo(() => {
-    if (!selectedDate) return trades;
-    return trades.filter(trade => {
-      const tradeDate = new Date(trade.id);
-      return tradeDate.toDateString() === selectedDate.toDateString();
-    });
-  }, [trades, selectedDate]);
+const Dashboard: React.FC<{ trades: VisualTrade[] }> = ({ trades }) => {
 
-  const stats = React.useMemo(() => {
-    const totalTrades = filteredTrades.length;
-    const wins = filteredTrades.filter(t => t.outcome === 'WIN').length;
-    const losses = totalTrades - wins;
-    const winRate = totalTrades > 0 ? (wins / totalTrades) * 100 : 0;
-
-    const calls = filteredTrades.filter(t => t.userAction === 'CALL');
-    const callWins = calls.filter(t => t.outcome === 'WIN').length;
-    const callWinRate = calls.length > 0 ? (callWins / calls.length) * 100 : 0;
-
-    const puts = filteredTrades.filter(t => t.userAction === 'PUT');
-    const putWins = puts.filter(t => t.outcome === 'WIN').length;
-    const putWinRate = puts.length > 0 ? (putWins / puts.length) * 100 : 0;
-
-    let totalPL = 0;
-    const plHistory = [0];
-    filteredTrades.forEach(trade => {
+  const historicalStats = React.useMemo(() => {
+    const dailyPL: Record<string, number> = {};
+    trades.forEach(trade => {
+        const date = new Date(trade.id).toDateString();
         const pnl = trade.outcome === 'WIN' 
             ? trade.amountInvested * (trade.payout / 100)
             : -trade.amountInvested;
-        totalPL += pnl;
-        plHistory.push(totalPL);
+        dailyPL[date] = (dailyPL[date] || 0) + pnl;
     });
+
+    let cumulativePnl = 0;
+    const chartData = Object.entries(dailyPL)
+      .map(([dateStr, pnl]) => ({ date: new Date(dateStr), pnl }))
+      .sort((a, b) => a.date.getTime() - b.date.getTime())
+      .map(d => {
+          cumulativePnl += d.pnl;
+          return { date: d.date, dailyPnl: d.pnl, cumulativePnl };
+      });
+
+    const totalPL = trades.reduce((acc, trade) => {
+        const pnl = trade.outcome === 'WIN' 
+            ? trade.amountInvested * (trade.payout / 100)
+            : -trade.amountInvested;
+        return acc + pnl;
+    }, 0);
+
+    const wins = trades.filter(t => t.outcome === 'WIN').length;
+    const totalTrades = trades.length;
+    const winRate = totalTrades > 0 ? (wins / totalTrades) * 100 : 0;
     
-    // Dummy data for sparklines to look populated
-    const winsHistory = filteredTrades.map((t,i) => t.outcome === 'WIN' ? i+1 : i).slice(-10);
-    const lossesHistory = filteredTrades.map((t,i) => t.outcome === 'LOSS' ? i+1 : i).slice(-10);
+    let bestDay = { pnl: 0, date: '' };
+    let worstDay = { pnl: 0, date: '' };
+    Object.entries(dailyPL).forEach(([date, pnl]) => {
+        if (pnl > bestDay.pnl) bestDay = { pnl, date };
+        if (pnl < worstDay.pnl) worstDay = { pnl, date };
+    });
 
-    return { wins, losses, winRate, totalTrades, totalPL, plHistory, callWinRate, putWinRate, winsHistory, lossesHistory };
-  }, [filteredTrades]);
-
-  const dashboardTitle = selectedDate 
-    ? `Resumen del Día: ${selectedDate.toLocaleDateString('es-ES')}`
-    : "Resumen General (Todo el Historial)";
-
-  const content = (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard label="Total P/L" value={`$${stats.totalPL.toFixed(2)}`} data={stats.plHistory} colorClass={stats.totalPL >= 0 ? 'text-glow-cyan' : 'text-magenta'} />
-          <StatCard label="Operaciones" value={stats.totalTrades.toString()} data={stats.plHistory.map((_, i) => i)} />
-          <StatCard label="Victorias" value={stats.wins.toString()} data={[0, ...stats.winsHistory]} />
-          <StatCard label="Pérdidas" value={stats.losses.toString()} data={[0, ...stats.lossesHistory]} colorClass="text-magenta"/>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2 futuristic-panel min-h-[250px]">
-              <StatisticsChart plHistory={stats.plHistory} />
-          </div>
-            <div className="futuristic-panel text-center">
-                <h3 className="text-lg font-bold uppercase mb-2">Rendimiento</h3>
-                <div className="flex justify-around items-center h-full">
-                  <CircularProgress percentage={stats.callWinRate} label="CALLS" />
-                  <CircularProgress percentage={stats.putWinRate} label="PUTS" />
-                </div>
-          </div>
-      </div>
-
-      <div className="futuristic-panel text-center">
-            <h3 className="text-lg font-bold uppercase mb-2">Win Rate General</h3>
-            <div className="flex justify-around">
-                <CircularProgress percentage={stats.winRate} label="Total" />
-            </div>
-      </div>
-    </>
-  );
+    return { chartData, totalPL, winRate, totalTrades, bestDay, worstDay };
+  }, [trades]);
 
   return (
     <div className="space-y-4">
-        <div className="futuristic-panel !py-3 !px-4 text-center">
-            <h3 className="text-md font-bold uppercase text-glow-cyan tracking-wider">
-                {dashboardTitle}
+        <div className="futuristic-panel text-center">
+            <h3 className="text-xl font-bold uppercase text-glow-cyan tracking-wider">
+                Resumen Histórico General
             </h3>
         </div>
-        
-        {filteredTrades.length === 0 && selectedDate ? (
-            <div className="futuristic-panel text-center py-10">
-                <p className="text-text-secondary">No hay operaciones registradas para esta fecha.</p>
-            </div>
-        ) : content}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard label="Total P/L Histórico" value={`$${historicalStats.totalPL.toFixed(2)}`} colorClass={historicalStats.totalPL >= 0 ? 'text-glow-cyan' : 'text-magenta'} />
+          <StatCard label="Win Rate General" value={`${historicalStats.winRate.toFixed(1)}%`} subValue={`${trades.filter(t=>t.outcome === 'WIN').length}W / ${trades.filter(t=>t.outcome === 'LOSS').length}L`} />
+          <StatCard label="Mejor Día" value={`+$${historicalStats.bestDay.pnl.toFixed(2)}`} subValue={historicalStats.bestDay.date ? new Date(historicalStats.bestDay.date).toLocaleDateString('es-ES') : 'N/A'} />
+          <StatCard label="Peor Día" value={`$${historicalStats.worstDay.pnl.toFixed(2)}`} subValue={historicalStats.worstDay.date ? new Date(historicalStats.worstDay.date).toLocaleDateString('es-ES') : 'N/A'} colorClass="text-magenta" />
+      </div>
+
+      <div className="futuristic-panel min-h-[350px]">
+          <HistoricalPerformanceChart data={historicalStats.chartData} />
+      </div>
 
     </div>
   );

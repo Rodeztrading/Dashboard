@@ -12,32 +12,32 @@ interface SettingsProps {
 }
 
 const Settings: React.FC<SettingsProps> = ({ userProfile, onSave, tradingPlan, onTradingPlanChange }) => {
-    const [name, setName] = useState(userProfile.name);
-    const [handle, setHandle] = useState(userProfile.handle);
-    const [avatar, setAvatar] = useState(userProfile.avatar);
+    const [formData, setFormData] = useState(userProfile);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         onTradingPlanChange(e.target.value);
     };
+    
+    const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
+        setFormData(prev => ({...prev, [id]: value}));
+    }
 
-    const handleAvatarClick = () => {
-        fileInputRef.current?.click();
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
+    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setAvatar(reader.result as string);
+                const resultString = reader.result as string;
+                setFormData(prev => ({...prev, avatar: resultString}));
             };
             reader.readAsDataURL(file);
         }
     };
 
     const handleSaveChanges = () => {
-        onSave({ name, handle, avatar });
+        onSave(formData);
         alert('Perfil actualizado!');
     };
 
@@ -51,8 +51,8 @@ const Settings: React.FC<SettingsProps> = ({ userProfile, onSave, tradingPlan, o
                         <input
                             type="text"
                             id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            value={formData.name}
+                            onChange={handleFormChange}
                             className="futuristic-input w-full rounded-md p-2"
                         />
                     </div>
@@ -61,30 +61,29 @@ const Settings: React.FC<SettingsProps> = ({ userProfile, onSave, tradingPlan, o
                         <input
                             type="text"
                             id="handle"
-                            value={handle}
-                            onChange={(e) => setHandle(e.target.value)}
+                            value={formData.handle}
+                            onChange={handleFormChange}
                             className="futuristic-input w-full rounded-md p-2"
                         />
                     </div>
-                    <div>
+                     <div>
                         <label className="block text-sm font-medium text-text-secondary mb-1">Avatar</label>
                         <div className="flex items-center gap-4">
-                            <img src={avatar} alt="Avatar" className="w-16 h-16 rounded-full border-2 border-cyan/50" />
+                            <img src={formData.avatar} alt="Avatar" className="w-16 h-16 rounded-full object-cover" />
                             <input
-                                ref={fileInputRef}
                                 type="file"
-                                accept="image/*"
-                                onChange={handleFileChange}
+                                ref={fileInputRef}
+                                onChange={handleAvatarChange}
                                 className="hidden"
+                                accept="image/png, image/jpeg, image/webp"
                             />
                             <button 
-                                onClick={handleAvatarClick}
+                                onClick={() => fileInputRef.current?.click()}
                                 className="futuristic-button text-sm py-1 px-3 rounded-md"
                             >
                                 Cambiar
                             </button>
                         </div>
-                        <p className="text-xs text-text-secondary mt-2">Haz clic en "Cambiar" para seleccionar una nueva imagen</p>
                     </div>
                     <button
                         onClick={handleSaveChanges}

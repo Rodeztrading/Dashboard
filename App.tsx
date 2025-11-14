@@ -29,9 +29,9 @@ const App: React.FC = () => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
   const [userProfile, setUserProfile] = useState({
-    name: 'Sniper Trader',
-    handle: '@sniper_trader',
-    avatar: 'https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?w=400&h=400&fit=crop'
+    name: 'Malinda Holloway',
+    handle: '@malindah',
+    avatar: `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+MTAxPAkPOjo5Ojb/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozb/wAARCAH0AfQDASIAAhEBAxEB/8QAGwABAAMBAQEBAAAAAAAAAAAAAAECAwQFBgf/xAA5EAACAQMBBQUHAwQCAgMAAAAAAQIDERIEITFBUWETcZEFIjKBobFCwdHh8AZSYnLxQ8LSI4KS/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAER/9oADAMBAAIRAxEAPwD6IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABw3tY2/s4WvNqfL0+YHVxV/uV+Xq+Zwe73L8vV+YHdwe73L8vV+YHe7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+X-1tYW5pdGFyeSBwaXRzIiwic291cmNlIjoiaW50ZXJuZXQifQ==`
   });
   const [tradingPlan, setTradingPlan] = useState('');
 
@@ -107,47 +107,23 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (activeView) {
       case 'dashboard':
-        return (
-          <div className="space-y-4">
-            <BalanceManager 
-              initialBalance={initialBalance}
-              currentBalance={currentBalance}
-              onSetBalance={handleSetBalance}
-            />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center futuristic-panel p-4">
-              <div>
-                <h3 className="text-lg font-bold uppercase">Consola de Operaciones</h3>
-                <p className="text-text-secondary mt-1 text-sm">
-                  {isSessionActive ? 'Registra una nueva operación o revisa tu historial.' : 'Establece un capital para registrar operaciones.'}
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 justify-end">
-                <button 
-                  onClick={() => setIsTradeModalOpen(true)}
-                  className={`font-bold py-2 px-4 rounded-lg ${isSessionActive ? 'futuristic-button' : 'bg-gray-700 text-gray-400 cursor-not-allowed'}`}
-                  disabled={!isSessionActive}
-                  title={!isSessionActive ? 'Establece un capital para registrar operaciones' : ''}
-                >
-                  + Registrar Operación
-                </button>
-                <button 
-                  onClick={handleEndSession}
-                  className={`font-bold py-2 px-4 rounded-lg ${isSessionActive ? 'futuristic-button-red' : 'bg-gray-700 text-gray-400 cursor-not-allowed'}`}
-                  disabled={!isSessionActive}
-                  title={!isSessionActive ? 'No hay sesión activa' : ''}
-                >
-                  Terminar Sesión
-                </button>
-              </div>
-            </div>
-            <Dashboard trades={trades} initialBalance={initialBalance} selectedDate={selectedDate} />
-            <TradeHistory trades={trades} selectedDate={selectedDate} onClearFilter={() => setSelectedDate(null)} />
-          </div>
-        );
+        return <Dashboard trades={trades} />;
       case 'settings':
         return <Settings userProfile={userProfile} onSave={handleUpdateProfile} tradingPlan={tradingPlan} onTradingPlanChange={handleTradingPlanChange} />;
       case 'sniper':
-        return <Sniper trades={trades} />;
+        return <Sniper 
+                  trades={trades} 
+                  initialBalance={initialBalance}
+                  currentBalance={currentBalance}
+                  onSetBalance={handleSetBalance}
+                  isSessionActive={isSessionActive}
+                  onEndSession={handleEndSession}
+                  onOpenTradeModal={() => setIsTradeModalOpen(true)}
+                  selectedDate={selectedDate}
+                  onDateSelect={handleDateSelect}
+                  onClearFilter={() => setSelectedDate(null)}
+                  sessionStartTime={sessionStartTime}
+               />;
       default:
         return <p>Vista no encontrada</p>;
     }
@@ -161,9 +137,6 @@ const App: React.FC = () => {
         activeView={activeView} 
         setActiveView={setActiveView} 
         userProfile={userProfile}
-        trades={trades}
-        selectedDate={selectedDate}
-        onDateSelect={handleDateSelect}
         tradingPlan={tradingPlan}
       />
 
