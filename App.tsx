@@ -31,7 +31,7 @@ const App: React.FC = () => {
   const [userProfile, setUserProfile] = useState({
     name: 'Malinda Holloway',
     handle: '@malindah',
-    avatar: `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+MTAxPAkPOjo5Ojb/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozb/wAARCAH0AfQDASIAAhEBAxEB/8QAGwABAAMBAQEBAAAAAAAAAAAAAAECAwQFBgf/xAA5EAACAQMBBQUHAwQCAgMAAAAAAQIDERIEITFBUWETcZEFIjKBobFCwdHh8AZSYnLxQ8LSI4KS/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAER/9oADAMBAAIRAxEAPwD6IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABw3tY2/s4WvNqfL0+YHVxV/uV+Xq+Zwe73L8vV+YHdwe73L8vV+YHe7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+X-1tYW5pdGFyeSBwaXRzIiwic291cmNlIjoiaW50ZXJuZXQifQ==`
+    avatar: `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+MTAxPAkPOjo5Ojb/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozb/wAARCAH0AfQDASIAAhEBAxEB/8QAGwABAAMBAQEBAAAAAAAAAAAAAAECAwQFBgf/xAA5EAACAQMBBQUHAwQCAgMAAAAAAQIDERIEITFBUWETcZEFIjKBobFCwdHh8AZSYnLxQ8LSI4KS/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAER/9oADAMBAAIRAxEAPwD6IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABw3tY2/s4WvNqfL0+YHVxV/uV+Xq+Zwe73L8vV+YHdwe73L8vV+YHe7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+X-1tYW5pdGFyeSBwaXRzIiwic291cmNlIjoiaW50ZXJuZXQifQ==`
   });
   const [tradingPlan, setTradingPlan] = useState('');
 
@@ -104,12 +104,40 @@ const App: React.FC = () => {
     setActiveView('dashboard');
   };
 
+  const handleImportData = (jsonString: string) => {
+    if (!window.confirm('¿Importar datos? Esto sobreescribirá todos los datos actuales en este dispositivo. Se recomienda exportar primero.')) {
+      return;
+    }
+    try {
+      const data = JSON.parse(jsonString);
+      // Basic validation
+      if (data.trades && Array.isArray(data.trades) && typeof data.tradingPlan !== 'undefined') {
+        setTrades(data.trades);
+        handleTradingPlanChange(data.tradingPlan);
+        alert('¡Datos importados con éxito! La página se recargará para aplicar todos los cambios.');
+        window.location.reload();
+      } else {
+        throw new Error('El archivo no tiene el formato correcto.');
+      }
+    } catch (error) {
+      console.error("Failed to import data", error);
+      alert(`Error al importar los datos: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
+
   const renderContent = () => {
     switch (activeView) {
       case 'dashboard':
         return <Dashboard trades={trades} />;
       case 'settings':
-        return <Settings userProfile={userProfile} onSave={handleUpdateProfile} tradingPlan={tradingPlan} onTradingPlanChange={handleTradingPlanChange} />;
+        return <Settings 
+                 userProfile={userProfile} 
+                 onSave={handleUpdateProfile} 
+                 tradingPlan={tradingPlan} 
+                 onTradingPlanChange={handleTradingPlanChange}
+                 trades={trades}
+                 onImportData={handleImportData}
+               />;
       case 'sniper':
         return <Sniper 
                   trades={trades} 
