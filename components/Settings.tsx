@@ -1,70 +1,35 @@
-import React, { useState, useRef } from 'react';
+
+import React, { useRef, useState, useEffect } from 'react';
+import { updateProfile } from 'firebase/auth';
+import { auth } from '../services/firebase';
 import type { VisualTrade } from '../types';
 
 interface SettingsProps {
-    userProfile: {
-        name: string;
-        handle: string;
-        avatar: string;
-    };
-    onSave: (newProfile: { name: string; handle: string; avatar: string; }) => void;
     tradingPlan: string;
     onTradingPlanChange: (notes: string) => void;
-    trades: VisualTrade[];
-    onImportData: (jsonString: string) => void;
+    onExportData: () => void;
+    onImportData: (data: { trades: VisualTrade[], tradingPlan: string }) => void;
+    theme?: string;
+    onThemeChange?: (theme: string) => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ userProfile, onSave, tradingPlan, onTradingPlanChange, trades, onImportData }) => {
-    const [formData, setFormData] = useState(userProfile);
-    const avatarFileInputRef = useRef<HTMLInputElement>(null);
-    const dataImportFileInputRef = useRef<HTMLInputElement>(null);
+const Settings: React.FC<SettingsProps> = ({ tradingPlan, onTradingPlanChange, onExportData, onImportData, theme = 'futuristic', onThemeChange }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [displayName, setDisplayName] = useState(auth.currentUser?.displayName || '');
+    const [isUpdatingName, setIsUpdatingName] = useState(false);
+    const [selectedTheme, setSelectedTheme] = useState(theme);
+
+    // Update displayName when user changes
+    React.useEffect(() => {
+        setDisplayName(auth.currentUser?.displayName || '');
+    }, [auth.currentUser?.displayName]);
 
     const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         onTradingPlanChange(e.target.value);
     };
     
-    const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { id, value } = e.target;
-        setFormData(prev => ({...prev, [id]: value}));
-    }
-
-    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const resultString = reader.result as string;
-                setFormData(prev => ({...prev, avatar: resultString}));
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleSaveChanges = () => {
-        onSave(formData);
-        alert('Perfil actualizado!');
-    };
-
-    const handleExport = () => {
-      const dataToExport = {
-        trades: trades,
-        tradingPlan: tradingPlan,
-      };
-      const jsonString = JSON.stringify(dataToExport, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      const date = new Date().toISOString().slice(0, 10);
-      a.href = url;
-      a.download = `visual-ai-journal-backup-${date}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    };
-
     const handleImportClick = () => {
-        dataImportFileInputRef.current?.click();
+        fileInputRef.current?.click();
     };
 
     const handleFileImport = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,109 +38,174 @@ const Settings: React.FC<SettingsProps> = ({ userProfile, onSave, tradingPlan, o
 
         const reader = new FileReader();
         reader.onload = (e) => {
-            const text = e.target?.result;
-            if (typeof text === 'string') {
-                onImportData(text);
+            try {
+                const text = e.target?.result;
+                if (typeof text === 'string') {
+                    const data = JSON.parse(text);
+                    onImportData(data);
+                }
+            } catch (error) {
+                console.error("Error parsing imported file:", error);
+                alert("Error al leer el archivo. Asegúrate de que es un archivo de respaldo válido.");
             }
         };
-        reader.onerror = () => {
-            alert('Error al leer el archivo.');
-        };
         reader.readAsText(file);
-        
-        if (event.target) {
-            event.target.value = '';
+        // Reset file input to allow importing the same file again
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
         }
     };
 
+    const handleUpdateDisplayName = async () => {
+        if (!auth.currentUser || !displayName.trim()) return;
+
+        setIsUpdatingName(true);
+        try {
+            await updateProfile(auth.currentUser, {
+                displayName: displayName.trim()
+            });
+            alert('Nombre de usuario actualizado exitosamente.');
+        } catch (error) {
+            console.error('Error updating display name:', error);
+            alert('Error al actualizar el nombre de usuario.');
+        } finally {
+            setIsUpdatingName(false);
+        }
+    };
+
+    const handleThemeChange = (newTheme: string) => {
+        setSelectedTheme(newTheme);
+        onThemeChange?.(newTheme);
+    };
 
     return (
-        <div className="space-y-4">
-            <div className="futuristic-panel p-4">
-                <h2 className="text-lg font-bold text-glow-cyan mb-4 uppercase">Configuración de Perfil</h2>
-                <div className="space-y-4">
-                    <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-text-secondary mb-1">Nombre</label>
-                        <input
-                            type="text"
-                            id="name"
-                            value={formData.name}
-                            onChange={handleFormChange}
-                            className="futuristic-input w-full rounded-md p-2"
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="handle" className="block text-sm font-medium text-text-secondary mb-1">Handle</label>
-                        <input
-                            type="text"
-                            id="handle"
-                            value={formData.handle}
-                            onChange={handleFormChange}
-                            className="futuristic-input w-full rounded-md p-2"
-                        />
-                    </div>
-                     <div>
-                        <label className="block text-sm font-medium text-text-secondary mb-1">Avatar</label>
-                        <div className="flex items-center gap-4">
-                            <img src={formData.avatar} alt="Avatar" className="w-16 h-16 rounded-full object-cover" />
-                            <input
-                                type="file"
-                                ref={avatarFileInputRef}
-                                onChange={handleAvatarChange}
-                                className="hidden"
-                                accept="image/png, image/jpeg, image/webp"
-                            />
-                            <button 
-                                onClick={() => avatarFileInputRef.current?.click()}
-                                className="futuristic-button text-sm py-1 px-3 rounded-md"
-                            >
-                                Cambiar
-                            </button>
-                        </div>
-                    </div>
-                    <button
-                        onClick={handleSaveChanges}
-                        className="futuristic-button font-bold py-2 px-6 rounded-lg"
-                    >
-                        Guardar Cambios
-                    </button>
-                </div>
-            </div>
-
-            <div className="futuristic-panel p-4">
-                <h2 className="text-lg font-bold text-glow-cyan mb-4 uppercase">Gestión de Datos (Sincronización)</h2>
-                <p className="text-sm text-text-secondary mb-4">
-                    Para usar tus datos en otro dispositivo (como tu celular), primero 'Exporta' los datos desde tu dispositivo actual para crear un archivo de respaldo. Luego, en el otro dispositivo, usa la opción 'Importar' y selecciona ese archivo.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <button onClick={handleExport} className="futuristic-button font-bold py-2 px-6 rounded-lg w-full">
-                        Exportar Datos
-                    </button>
-                    <button onClick={handleImportClick} className="futuristic-button font-bold py-2 px-6 rounded-lg w-full">
-                        Importar Datos
-                    </button>
-                    <input
-                        type="file"
-                        ref={dataImportFileInputRef}
-                        onChange={handleFileImport}
-                        className="hidden"
-                        accept="application/json,.json"
-                    />
-                </div>
-                <p className="text-xs text-text-secondary mt-3">
-                    <strong>Importante:</strong> Al importar se reemplazarán todos los datos existentes en el dispositivo actual.
-                </p>
-            </div>
-
-            <div className="futuristic-panel p-4 h-full flex flex-col" style={{ minHeight: '300px' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
+            <div className="futuristic-panel p-4 h-full flex flex-col">
                 <h3 className="text-lg font-bold text-glow-cyan mb-2 uppercase">Plan de Trading</h3>
+                <p className="text-sm text-text-secondary mb-4">
+                    Tus notas se guardan automáticamente en este dispositivo.
+                </p>
                 <textarea
                     value={tradingPlan}
                     onChange={handleNotesChange}
                     placeholder="Describe tu enfoque, reglas y objetivos para esta sesión..."
-                    className="w-full flex-grow futuristic-input text-white rounded-md p-3 text-sm resize-none"
+                    className={`w-full flex-grow futuristic-input rounded-md p-3 text-sm resize-none min-h-[300px] ${
+                        theme === 'casual' ? 'text-black' : 'text-white'
+                    }`}
                 />
-                <p className="text-xs text-text-secondary mt-2">Guardado automático en este dispositivo.</p>
+            </div>
+            <div className="futuristic-panel p-4">
+                <h3 className="text-lg font-bold text-glow-cyan mb-2 uppercase">Perfil de Usuario</h3>
+                <p className="text-sm text-text-secondary mb-4">
+                    Personaliza tu nombre de usuario que se mostrará en la aplicación.
+                </p>
+                <div className="space-y-4">
+                    <input
+                        type="text"
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        placeholder="Tu nombre de usuario"
+                        className={`w-full futuristic-input rounded-md p-3 text-center ${
+                            theme === 'casual' ? 'text-black' : 'text-white'
+                        }`}
+                    />
+                    <button
+                        onClick={handleUpdateDisplayName}
+                        disabled={!displayName.trim() || isUpdatingName}
+                        className={`w-full font-bold py-2.5 px-4 rounded-md transition-all text-sm ${
+                            theme === 'casual'
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-300 disabled:text-gray-500'
+                                : theme === 'trading'
+                                ? 'bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-600 disabled:text-gray-400'
+                                : 'futuristic-button'
+                        }`}
+                    >
+                        {isUpdatingName ? 'Actualizando...' : 'Actualizar Nombre'}
+                    </button>
+                </div>
+                <div className="border-t border-border-color mt-6 pt-4 text-xs text-text-secondary">
+                    <p className="font-bold">INFORMACIÓN:</p>
+                    <p className="mt-2">Email: {auth.currentUser?.email}</p>
+                </div>
+            </div>
+            <div className="futuristic-panel p-4">
+                <h3 className="text-lg font-bold text-glow-cyan mb-2 uppercase">Estilos de Tema</h3>
+                <p className="text-sm text-text-secondary mb-4">
+                    Elige el estilo visual que prefieras para la aplicación.
+                </p>
+                <div className="space-y-3">
+                    <button
+                        onClick={() => handleThemeChange('futuristic')}
+                        className={`w-full p-3 rounded-lg border-2 transition-all ${
+                            selectedTheme === 'futuristic'
+                                ? 'border-cyan-400 bg-cyan-400/20 text-cyan-400'
+                                : 'border-gray-600 hover:border-cyan-400 text-gray-300'
+                        }`}
+                    >
+                        🚀 Futurista
+                    </button>
+                    <button
+                        onClick={() => handleThemeChange('casual')}
+                        className={`w-full p-3 rounded-lg border-2 transition-all ${
+                            selectedTheme === 'casual'
+                                ? 'border-cyan-400 bg-cyan-400/20 text-cyan-400'
+                                : 'border-gray-600 hover:border-cyan-400 text-gray-300'
+                        }`}
+                    >
+                        💼 Casual
+                    </button>
+                    <button
+                        onClick={() => handleThemeChange('trading')}
+                        className={`w-full p-3 rounded-lg border-2 transition-all ${
+                            selectedTheme === 'trading'
+                                ? 'border-cyan-400 bg-cyan-400/20 text-cyan-400'
+                                : 'border-gray-600 hover:border-cyan-400 text-gray-300'
+                        }`}
+                    >
+                        📈 Trading Pro
+                    </button>
+                </div>
+            </div>
+            <div className="futuristic-panel p-4">
+                <h3 className="text-lg font-bold text-glow-cyan mb-2 uppercase">Gestión de Datos</h3>
+                 <p className="text-sm text-text-secondary mb-4">
+                    Exporta tus datos para tener una copia de seguridad o para transferirlos a otro dispositivo.
+                </p>
+                <div className="space-y-4">
+                    <button onClick={onExportData} className={`w-full font-bold py-2.5 px-4 rounded-md transition-all text-sm ${
+                        theme === 'casual'
+                            ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                            : theme === 'trading'
+                            ? 'bg-green-600 hover:bg-green-700 text-white'
+                            : 'futuristic-button'
+                    }`}>
+                        Exportar Datos
+                    </button>
+                    <button onClick={handleImportClick} className={`w-full font-bold py-2.5 px-4 rounded-md transition-all text-sm ${
+                        theme === 'casual'
+                            ? 'bg-red-600 hover:bg-red-700 text-white'
+                            : theme === 'trading'
+                            ? 'bg-red-600 hover:bg-red-700 text-white'
+                            : 'futuristic-button-red'
+                    }`}>
+                        Importar Datos
+                    </button>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileImport}
+                        className="hidden"
+                        accept="application/json"
+                    />
+                </div>
+                <div className="border-t border-border-color mt-6 pt-4 text-xs text-text-secondary">
+                    <p className="font-bold">IMPORTANTE:</p>
+                    <ul className="list-disc list-inside mt-2 space-y-1">
+                        <li>Al importar, los datos actuales serán <strong className="text-magenta">completamente reemplazados</strong>.</li>
+                        <li>Asegúrate de que el archivo importado sea un respaldo válido generado por esta aplicación.</li>
+                        <li>Se recomienda exportar tus datos actuales antes de importar.</li>
+                    </ul>
+                </div>
             </div>
         </div>
     );

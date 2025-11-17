@@ -1,25 +1,21 @@
+
 import React, { useState, useEffect } from 'react';
-import BalanceManager from './components/BalanceManager';
-import TradeWorkflow from './components/TradeWorkflow';
-import TradeHistory from './components/TradeHistory';
-import Dashboard from './components/Dashboard';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from './services/firebase';
 import Sidebar from './components/Sidebar';
-import DashboardHeader from './components/DashboardHeader';
-import Settings from './components/Settings';
+import Dashboard from './components/Dashboard';
 import Sniper from './components/Sniper';
+import Settings from './components/Settings';
+import TradeWorkflow from './components/TradeWorkflow';
 import SessionReviewModal from './components/SessionReviewModal';
+import DashboardHeader from './components/DashboardHeader';
+import LoginScreen from './components/LoginScreen';
 import type { VisualTrade } from './types';
 
 const App: React.FC = () => {
-  const [trades, setTrades] = useState<VisualTrade[]>(() => {
-    try {
-      const savedTrades = localStorage.getItem('visual-ai-journal-trades');
-      return savedTrades ? JSON.parse(savedTrades) : [];
-    } catch (error) {
-      console.error("Failed to parse trades from localStorage", error);
-      return [];
-    }
-  });
+  const [user, setUser] = useState<any>(null);
+  const [trades, setTrades] = useState<VisualTrade[]>([]);
+  const [tradingPlan, setTradingPlan] = useState('');
 
   const [initialBalance, setInitialBalance] = useState<number | null>(null);
   const [currentBalance, setCurrentBalance] = useState<number | null>(null);
@@ -28,27 +24,94 @@ const App: React.FC = () => {
   const [isTradeModalOpen, setIsTradeModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
-  const [userProfile, setUserProfile] = useState({
-    name: 'Malinda Holloway',
-    handle: '@malindah',
-    avatar: `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+MTAxPAkPOjo5Ojb/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozb/wAARCAH0AfQDASIAAhEBAxEB/8QAGwABAAMBAQEBAAAAAAAAAAAAAAECAwQFBgf/xAA5EAACAQMBBQUHAwQCAgMAAAAAAQIDERIEITFBUWETcZEFIjKBobFCwdHh8AZSYnLxQ8LSI4KS/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAER/9oADAMBAAIRAxEAPwD6IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABw3tY2/s4WvNqfL0+YHVxV/uV+Xq+Zwe73L8vV+YHdwe73L8vV+YHe7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+Xq/MDu4Pd7l+X-1tYW5pdGFyeSBwaXRzIiwic291cmNlIjoiaW50ZXJuZXQifQ==`
-  });
-  const [tradingPlan, setTradingPlan] = useState('');
-
+  const [theme, setTheme] = useState<string>(() => localStorage.getItem('visual-theme') || 'futuristic');
+  
+  // Listen to Firebase auth state changes
   useEffect(() => {
-    localStorage.setItem('visual-ai-journal-trades', JSON.stringify(trades));
-  }, [trades]);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      if (firebaseUser) {
+        // Load data from localStorage when user logs in
+        try {
+          const savedTrades = localStorage.getItem(`visual-trades_${firebaseUser.uid}`);
+          if (savedTrades) {
+            setTrades(JSON.parse(savedTrades));
+          } else {
+            setTrades([]); // Ensure empty state for new or empty profiles
+          }
 
-  useEffect(() => {
-    const savedNotes = localStorage.getItem('traderStrategyNotes');
-    if (savedNotes) {
-      setTradingPlan(savedNotes);
-    }
+          const savedPlan = localStorage.getItem(`visual-trading-plan_${firebaseUser.uid}`);
+          if (savedPlan) {
+            setTradingPlan(savedPlan);
+          } else {
+            setTradingPlan(''); // Ensure empty state for new or empty profiles
+          }
+        } catch (error) {
+          console.error("Error loading data from localStorage:", error);
+        }
+      } else {
+        setTrades([]);
+        setTradingPlan('');
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
+
+  // Apply theme on mount
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  // Save trades to localStorage whenever they change
+  useEffect(() => {
+    if (!user) return;
+    try {
+      localStorage.setItem(`visual-trades_${user.uid}`, JSON.stringify(trades));
+    } catch (error) {
+      console.error("Error saving trades to localStorage:", error);
+    }
+  }, [trades, user]);
+
+  // Save trading plan to localStorage whenever it changes
+  useEffect(() => {
+    if (!user) return;
+    try {
+      localStorage.setItem(`visual-trading-plan_${user.uid}`, tradingPlan);
+    } catch (error) {
+      console.error("Error saving trading plan to localStorage:", error);
+    }
+  }, [tradingPlan, user]);
+
+
+  const handleLogin = () => {
+    // Firebase auth state will be handled by onAuthStateChanged
+  };
+
+  const handleLogout = async () => {
+    if (window.confirm("¿Estás seguro de que quieres cerrar sesión?")) {
+      try {
+        await signOut(auth);
+        // Reset session-specific state
+        setInitialBalance(null);
+        setCurrentBalance(null);
+        setSessionStartTime(null);
+        setActiveView('dashboard');
+      } catch (error) {
+        console.error("Error signing out:", error);
+      }
+    }
+  };
+
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme);
+    localStorage.setItem('visual-theme', newTheme);
+    // Apply theme to document
+    document.documentElement.setAttribute('data-theme', newTheme);
+  };
 
   const handleTradingPlanChange = (notes: string) => {
     setTradingPlan(notes);
-    localStorage.setItem('traderStrategyNotes', notes);
   };
   
   const isSessionActive = initialBalance !== null;
@@ -58,23 +121,25 @@ const App: React.FC = () => {
     setCurrentBalance(balance);
     setSessionStartTime(Date.now());
   };
-
-  const handleSaveTrade = (trade: VisualTrade) => {
-    setTrades(prevTrades => [...prevTrades, trade]);
+  
+  const handleSaveAndClose = (tradeData: Omit<VisualTrade, 'id' | 'createdAt'>) => {
+    const newTrade: VisualTrade = {
+      ...tradeData,
+      id: `trade_${Date.now()}_${Math.random()}`,
+      createdAt: Date.now(),
+    };
+    
+    setTrades(prevTrades => [...prevTrades, newTrade]);
     
     if (currentBalance !== null) {
-      const profitOrLoss = trade.outcome === 'WIN' 
-        ? trade.amountInvested * (trade.payout / 100)
-        : -trade.amountInvested;
-      
+      const profitOrLoss = tradeData.outcome === 'WIN' 
+        ? tradeData.amountInvested * (tradeData.payout / 100)
+        : -tradeData.amountInvested;
       setCurrentBalance(prevBalance => (prevBalance !== null ? prevBalance + profitOrLoss : null));
     }
-  };
-
-  const handleSaveAndClose = (trade: VisualTrade) => {
-    handleSaveTrade(trade);
     setIsTradeModalOpen(false);
   };
+
 
   const handleEndSession = () => {
     if (window.confirm('¿Confirmar fin de la sesión? Se generará un análisis de IA y luego se reiniciará el capital.')) {
@@ -99,48 +164,52 @@ const App: React.FC = () => {
     }
   };
 
-  const handleUpdateProfile = (newProfile: { name: string; handle: string; avatar: string; }) => {
-    setUserProfile(newProfile);
-    setActiveView('dashboard');
+  const handleExportData = () => {
+    if (!user) return;
+    const dataToExport = {
+      trades,
+      tradingPlan
+    };
+    const dataStr = JSON.stringify(dataToExport, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `visual-journal-backup-${user.uid}-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
-  const handleImportData = (jsonString: string) => {
-    if (!window.confirm('¿Importar datos? Esto sobreescribirá todos los datos actuales en este dispositivo. Se recomienda exportar primero.')) {
-      return;
-    }
-    try {
-      const data = JSON.parse(jsonString);
-      // Basic validation
-      if (data.trades && Array.isArray(data.trades) && typeof data.tradingPlan !== 'undefined') {
+  const handleImportData = (data: { trades: VisualTrade[], tradingPlan: string }) => {
+    if (window.confirm("¿Estás seguro? Esto reemplazará todos los datos actuales.")) {
+      if (Array.isArray(data.trades) && typeof data.tradingPlan === 'string') {
         setTrades(data.trades);
-        handleTradingPlanChange(data.tradingPlan);
-        alert('¡Datos importados con éxito! La página se recargará para aplicar todos los cambios.');
-        window.location.reload();
+        setTradingPlan(data.tradingPlan);
+        alert("Datos importados con éxito.");
       } else {
-        throw new Error('El archivo no tiene el formato correcto.');
+        alert("El archivo no tiene el formato correcto.");
       }
-    } catch (error) {
-      console.error("Failed to import data", error);
-      alert(`Error al importar los datos: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
-
+  
   const renderContent = () => {
     switch (activeView) {
       case 'dashboard':
         return <Dashboard trades={trades} />;
       case 'settings':
-        return <Settings 
-                 userProfile={userProfile} 
-                 onSave={handleUpdateProfile} 
-                 tradingPlan={tradingPlan} 
+        return <Settings
+                 tradingPlan={tradingPlan}
                  onTradingPlanChange={handleTradingPlanChange}
-                 trades={trades}
+                 onExportData={handleExportData}
                  onImportData={handleImportData}
+                 theme={theme}
+                 onThemeChange={handleThemeChange}
                />;
       case 'sniper':
-        return <Sniper 
-                  trades={trades} 
+        return <Sniper
+                  trades={trades}
                   initialBalance={initialBalance}
                   currentBalance={currentBalance}
                   onSetBalance={handleSetBalance}
@@ -151,25 +220,32 @@ const App: React.FC = () => {
                   onDateSelect={handleDateSelect}
                   onClearFilter={() => setSelectedDate(null)}
                   sessionStartTime={sessionStartTime}
+                  theme={theme}
                />;
       default:
         return <p>Vista no encontrada</p>;
     }
   };
 
-  const sessionTrades = trades.filter(t => sessionStartTime && new Date(t.id).getTime() >= sessionStartTime);
+  const sessionTrades = trades.filter(t => sessionStartTime && t.createdAt >= sessionStartTime);
+
+  if (!user) {
+    return <LoginScreen onLogin={handleLogin} />;
+  }
 
   return (
     <div className="grid grid-cols-[80px_1fr] md:grid-cols-[280px_1fr] h-screen bg-background-dark text-text-primary font-sans">
-      <Sidebar 
-        activeView={activeView} 
-        setActiveView={setActiveView} 
-        userProfile={userProfile}
+      <Sidebar
+        activeView={activeView}
+        setActiveView={setActiveView}
         tradingPlan={tradingPlan}
+        user={user?.displayName || user?.email || 'Usuario'}
+        onLogout={handleLogout}
+        theme={theme}
       />
 
       <main className="overflow-y-auto p-4 flex flex-col gap-4">
-        <DashboardHeader viewTitle={activeView} />
+        <DashboardHeader viewTitle={activeView} theme={theme} />
         {renderContent()}
       </main>
 
@@ -185,7 +261,7 @@ const App: React.FC = () => {
           </div>
       )}
       
-      {isReviewModalOpen && initialBalance && currentBalance && (
+      {isReviewModalOpen && initialBalance !== null && currentBalance !== null && (
         <SessionReviewModal
           isOpen={isReviewModalOpen}
           onClose={handleCloseReviewAndReset}

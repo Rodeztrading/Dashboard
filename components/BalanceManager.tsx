@@ -28,13 +28,13 @@ const BalanceManager: React.FC<BalanceManagerProps> = ({ initialBalance, current
             id="initial-balance"
             value={inputBalance}
             onChange={(e) => setInputBalance(e.target.value)}
-            className="futuristic-input rounded-md p-2 w-full sm:w-48"
+            className="futuristic-input rounded-md p-2 w-full sm:w-48 text-black focus:ring-0 focus:ring-offset-0 focus:border-cyan-400"
             placeholder="Ej: 1000"
             required
             min="1"
             step="any"
           />
-          <button type="submit" className="futuristic-button font-bold py-2 px-4 rounded-lg w-full sm:w-auto">
+          <button type="submit" className="font-bold py-2.5 px-4 rounded-md transition-all text-sm w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white">
             Establecer Capital
           </button>
         </form>

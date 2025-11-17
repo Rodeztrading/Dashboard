@@ -113,10 +113,11 @@ interface SniperProps {
   onDateSelect: (date: Date | null) => void;
   onClearFilter: () => void;
   sessionStartTime: number | null;
+  theme: string;
 }
 
 const Sniper: React.FC<SniperProps> = (props) => {
-  const { trades, initialBalance, currentBalance, onSetBalance, isSessionActive, onEndSession, onOpenTradeModal, selectedDate, onDateSelect, onClearFilter } = props;
+  const { trades, initialBalance, currentBalance, onSetBalance, isSessionActive, onEndSession, onOpenTradeModal, selectedDate, onDateSelect, onClearFilter, theme } = props;
   
   const [viewingTradesInfo, setViewingTradesInfo] = useState<{ trades: VisualTrade[]; startIndex: number; } | null>(null);
   const [activeFilterId, setActiveFilterId] = useState<string>('call'); 
@@ -188,16 +189,24 @@ const Sniper: React.FC<SniperProps> = (props) => {
             <h3 className="text-lg font-bold uppercase">Consola de Operaciones</h3>
             <p className="text-text-secondary mt-1 text-sm mb-4">Registra una nueva operación o termina la sesión.</p>
             <div className="flex flex-col sm:flex-row gap-3">
-                <button 
+                <button
                     onClick={onOpenTradeModal}
-                    className="futuristic-button font-bold py-2 px-4 rounded-lg flex-1"
+                    className={`font-bold py-2.5 px-4 rounded-md transition-all text-sm flex-1 bg-transparent border border-cyan-400 hover:bg-cyan-400 hover:text-white ${
+                        !isSessionActive
+                            ? 'bg-gray-600 text-gray-400 cursor-not-allowed border-gray-600'
+                            : theme === 'casual' ? 'text-black' : 'text-white'
+                    }`}
                     disabled={!isSessionActive}
                 >
                     + Registrar Operación
                 </button>
-                <button 
+                <button
                     onClick={onEndSession}
-                    className="futuristic-button-red font-bold py-2 px-4 rounded-lg flex-1"
+                    className={`font-bold py-2.5 px-4 rounded-md transition-all text-sm flex-1 ${
+                        !isSessionActive
+                            ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                            : 'bg-red-600 hover:bg-red-700 text-white'
+                    }`}
                     disabled={!isSessionActive}
                 >
                     Terminar Sesión

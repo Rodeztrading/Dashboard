@@ -30,9 +30,10 @@ const Clock: React.FC = () => {
 
 interface DashboardHeaderProps {
     viewTitle: string;
+    theme?: string;
 }
 
-const DashboardHeader: React.FC<DashboardHeaderProps> = ({ viewTitle }) => {
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ viewTitle, theme = 'futuristic' }) => {
     const titleMap: { [key: string]: string } = {
         dashboard: 'Dashboard',
         settings: 'Configuración',
@@ -40,22 +41,27 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ viewTitle }) => {
     };
 
     const currentTitle = titleMap[viewTitle] || 'Dashboard';
-    
+
     return (
         <header className="flex flex-wrap justify-between items-center gap-4">
             <div>
-                <h2 className="text-2xl font-bold uppercase text-glow-cyan">{currentTitle}</h2>
+                <h2 className={`text-2xl font-bold uppercase ${
+                    theme === 'casual' ? 'text-blue-600' :
+                    theme === 'trading' ? 'text-green-400' :
+                    'text-glow-cyan'
+                }`}>{currentTitle}</h2>
                 <p className="text-xs text-text-secondary">Home / Library / {currentTitle}</p>
             </div>
             <div className="flex items-center space-x-4 md:space-x-6">
                 <Clock />
                 <div className="flex items-center space-x-4 text-text-secondary">
-                    <button className="hover:text-white" aria-label="Notifications"><BellIcon /></button>
-                    <button className="hover:text-white" aria-label="Search"><SearchIcon /></button>
-                    <button className="hover:text-white" aria-label="Settings"><CogIcon /></button>
+                    <button className="hover:text-text-primary transition-colors" aria-label="Notifications"><BellIcon /></button>
+                    <button className="hover:text-text-primary transition-colors" aria-label="Search"><SearchIcon /></button>
+                    <button className="hover:text-text-primary transition-colors" aria-label="Settings"><CogIcon /></button>
                 </div>
             </div>
         </header>
     );
 };
+
 export default DashboardHeader;

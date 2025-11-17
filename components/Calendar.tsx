@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import type { VisualTrade } from '../types';
 
@@ -12,7 +13,9 @@ const Calendar: React.FC<CalendarProps> = ({ trades, selectedDate, onDateSelect,
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const tradeDates = React.useMemo(() => 
-    new Set(trades.map(trade => new Date(trade.id).toDateString())),
+    new Set(trades.map(trade => {
+      return new Date(trade.createdAt).toDateString();
+    }).filter(Boolean)),
     [trades]
   );
 

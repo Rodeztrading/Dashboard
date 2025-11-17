@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { VisualTrade } from '../types';
 
@@ -114,7 +115,7 @@ const Dashboard: React.FC<{ trades: VisualTrade[] }> = ({ trades }) => {
   const historicalStats = React.useMemo(() => {
     const dailyPL: Record<string, number> = {};
     trades.forEach(trade => {
-        const date = new Date(trade.id).toDateString();
+        const date = new Date(trade.createdAt).toDateString();
         const pnl = trade.outcome === 'WIN' 
             ? trade.amountInvested * (trade.payout / 100)
             : -trade.amountInvested;

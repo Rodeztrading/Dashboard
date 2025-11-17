@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { VisualTrade } from '../types';
 import MarkdownRenderer from './MarkdownRenderer';
@@ -14,7 +15,7 @@ const TradeHistory: React.FC<TradeHistoryProps> = ({ trades, selectedDate, onCle
   const filteredTrades = React.useMemo(() => {
     if (!selectedDate) return trades;
     return trades.filter(trade => {
-      const tradeDate = new Date(trade.id);
+      const tradeDate = new Date(trade.createdAt);
       return tradeDate.toDateString() === selectedDate.toDateString();
     });
   }, [trades, selectedDate]);
