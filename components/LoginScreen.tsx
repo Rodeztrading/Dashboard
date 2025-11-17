@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebase';
@@ -16,7 +15,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    setLoading(false); // Era 'true', lo corregí para que no se quede cargando si hay un error en try
 
     try {
       await signInWithEmailAndPassword(auth, email, password);

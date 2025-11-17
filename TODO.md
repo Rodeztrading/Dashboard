@@ -1,15 +1,26 @@
-# TODO: Fix Data Persistence Issue on Session End and Re-login
+# TODO: Prevent Empty Saves to Firestore on Logout
 
-## Steps to Complete:
-1. Add console logging to trade and plan save operations in App.tsx for debugging.
-2. Modify handleCloseReviewAndReset to await explicit save of session trades before resetting balances.
-3. Ensure Firestore saves are handled properly and add error handling.
-4. Test the fix by simulating a session end and re-login.
-5. Verify data loads correctly on mobile after changes.
+## Information Gathered
+- App.tsx contains useEffect hooks that save trades and tradingPlan to Firestore on every change, including when state is cleared on logout.
+- handleLogout already saves data before sign out.
+- handleSaveAndClose and handleTradingPlanChange update state but don't save to Firestore immediately.
 
-## Progress:
-- [x] Step 1: Add logging to save operations.
-- [x] Step 2: Update handleCloseReviewAndReset.
-- [x] Step 3: Add error handling for saves.
-- [x] Step 4: Test session end and re-login.
-- [x] Step 5: Verify on mobile.
+## Plan
+- Modify useEffect for trades: Comment out Firestore save, keep localStorage.
+- Modify useEffect for tradingPlan: Comment out Firestore save, keep localStorage.
+- Update handleSaveAndClose: Make async, add Firestore save after setTrades.
+- Update handleTradingPlanChange: Make async, add Firestore save after setTradingPlan.
+
+## Dependent Files to be Edited
+- App.tsx
+
+## Followup Steps
+- Test login/logout to ensure no empty saves.
+- Test adding trades and changing plan to ensure saves work.
+- Verify data loads correctly on login.
+
+## Completed Tasks
+- [x] Modified useEffect for trades: Removed Firestore save, kept localStorage.
+- [x] Modified useEffect for tradingPlan: Removed Firestore save, kept localStorage.
+- [x] Updated handleSaveAndClose: Made async, added Firestore save after setTrades.
+- [x] Updated handleTradingPlanChange: Made async, added Firestore save after setTradingPlan.

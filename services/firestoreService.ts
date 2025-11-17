@@ -37,24 +37,17 @@ export const getUserData = async (userId: string): Promise<UserData | null> => {
 export const updateUserTrades = async (userId: string, trades: VisualTrade[]): Promise<void> => {
   try {
     const userDocRef = doc(db, "users", userId);
-    await updateDoc(userDocRef, { trades });
+    await setDoc(userDocRef, { trades }, { merge: true });
   } catch (error) {
     console.error("Error updating user trades in Firestore:", error);
-    // If updateDoc fails (e.g., document doesn't exist), try setDoc with merge
-    try {
-      await setDoc(userDocRef, { trades }, { merge: true });
-      console.log("Fallback save succeeded for trades");
-    } catch (fallbackError) {
-      console.error("Fallback save also failed:", fallbackError);
-      throw fallbackError;
-    }
+    throw error;
   }
 };
 
 export const updateUserTradingPlan = async (userId: string, tradingPlan: string): Promise<void> => {
   try {
     const userDocRef = doc(db, "users", userId);
-    await updateDoc(userDocRef, { tradingPlan });
+    await setDoc(userDocRef, { tradingPlan }, { merge: true });
   } catch (error) {
     console.error("Error updating user trading plan in Firestore:", error);
     throw error;
@@ -64,7 +57,7 @@ export const updateUserTradingPlan = async (userId: string, tradingPlan: string)
 export const updateUserTheme = async (userId: string, theme: string): Promise<void> => {
   try {
     const userDocRef = doc(db, "users", userId);
-    await updateDoc(userDocRef, { theme });
+    await setDoc(userDocRef, { theme }, { merge: true });
   } catch (error) {
     console.error("Error updating user theme in Firestore:", error);
     throw error;
