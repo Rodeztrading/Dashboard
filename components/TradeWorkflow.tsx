@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import ImageUploader from './ImageUploader';
-import GeminiAnalysis from './GeminiAnalysis'; // Import the new component
-import MarkdownRenderer from './MarkdownRenderer';
 import type { VisualTrade } from '../types';
 
 interface TradeWorkflowProps {
@@ -10,13 +8,14 @@ interface TradeWorkflowProps {
   onClose: () => void;
 }
 
-type WorkflowStep = 'upload' | 'analysis' | 'details';
+type WorkflowStep = 'upload' | 'details';
 
 const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionActive, onClose }) => {
   const [step, setStep] = useState<WorkflowStep>('upload');
   const [tradeImage, setTradeImage] = useState<{ base64: string; mimeType: string } | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [aiAnalysis, setAiAnalysis] = useState<string>('');
+  const [isAnalysisComplete, setIsAnalysisComplete] = useState<boolean>(false);
   const [userAction, setUserAction] = useState<'CALL' | 'PUT' | null>(null);
   const [outcome, setOutcome] = useState<'WIN' | 'LOSS' | null>(null);
   const [amountInvested, setAmountInvested] = useState<string>('');
@@ -27,11 +26,12 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
   const handleImageUpload = (base64: string, mimeType: string, dataUrl: string) => {
     setTradeImage({ base64, mimeType });
     setImagePreviewUrl(dataUrl);
-    setStep('analysis');
+    setStep('details'); // Skip analysis step
   };
 
   const handleAnalysisComplete = (analysis: string) => {
     setAiAnalysis(analysis);
+    setIsAnalysisComplete(true);
   };
 
   const handleSave = () => {
@@ -55,6 +55,7 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
     setTradeImage(null);
     setImagePreviewUrl(null);
     setAiAnalysis('');
+    setIsAnalysisComplete(false);
     setUserAction(null);
     setOutcome(null);
     setAmountInvested('');
@@ -90,40 +91,14 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
             </div>
           </>
         );
-      case 'analysis':
-        return (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[400px]">
-            <div className="flex flex-col items-center justify-center">
-              <div className="w-full h-64 rounded-lg flex items-center justify-center border-2 border-solid border-cyan/30 p-1">
-                {imagePreviewUrl && <img src={imagePreviewUrl} alt="Preview" className="max-h-full max-w-full rounded-lg object-contain" />}
-              </div>
-              <p className="text-sm font-semibold text-text-secondary mt-2">GRÁFICO CARGADO.</p>
-              <button onClick={() => setStep('upload')} className="text-xs text-cyan hover:underline mt-1">Cambiar imagen</button>
-            </div>
-            <div className="flex flex-col">
-              {tradeImage && <GeminiAnalysis tradeImage={tradeImage} onAnalysisComplete={handleAnalysisComplete} />}
-              <button onClick={() => setStep('details')} className="futuristic-button font-bold py-2 px-4 rounded-lg mt-4 w-full">
-                Continuar al Registro
-              </button>
-            </div>
-          </div>
-        );
       case 'details':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Columna Izquierda: Vista previa de Imagen y Análisis */}
-            <div className="flex flex-col space-y-2">
-               <div className="w-full h-48 rounded-lg flex items-center justify-center border-2 border-solid border-cyan/30 p-1">
-                  {imagePreviewUrl && <img src={imagePreviewUrl} alt="Preview" className="max-h-full max-w-full rounded-lg object-contain" />}
-               </div>
-               <div className="flex-grow bg-background-dark/50 p-2 rounded-lg border border-border-color text-xs overflow-y-auto max-h-48">
-                  <h4 className="font-bold text-cyan mb-1">Análisis IA:</h4>
-                  <MarkdownRenderer content={aiAnalysis || "No se generó análisis."} />
-               </div>
-            </div>
-  
-            {/* Columna Derecha: Detalles de la Operación */}
+          <div className="grid grid-cols-1 gap-6">
+            {/* Detalles de la Operación */}
             <div className="flex flex-col h-full space-y-4">
+              <div className="w-full h-48 rounded-lg flex items-center justify-center border-2 border-solid border-cyan/30 p-1 mb-4">
+                {imagePreviewUrl && <img src={imagePreviewUrl} alt="Preview" className="max-h-full max-w-full rounded-lg object-contain" />}
+              </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-cyan">Acción</h3>
                   <div className="grid grid-cols-2 gap-4">
