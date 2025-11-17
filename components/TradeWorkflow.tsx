@@ -93,12 +93,16 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
         );
       case 'details':
         return (
-          <div className="grid grid-cols-1 gap-6">
-            {/* Detalles de la Operación */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Columna Izquierda: Vista previa de Imagen */}
+            <div className="flex flex-col space-y-2">
+               <div className="w-full h-48 rounded-lg flex items-center justify-center border-2 border-solid border-cyan/30 p-1">
+                  {imagePreviewUrl && <img src={imagePreviewUrl} alt="Preview" className="max-h-full max-w-full rounded-lg object-contain" />}
+               </div>
+            </div>
+
+            {/* Columna Derecha: Detalles de la Operación */}
             <div className="flex flex-col h-full space-y-4">
-              <div className="w-full h-48 rounded-lg flex items-center justify-center border-2 border-solid border-cyan/30 p-1 mb-4">
-                {imagePreviewUrl && <img src={imagePreviewUrl} alt="Preview" className="max-h-full max-w-full rounded-lg object-contain" />}
-              </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-cyan">Acción</h3>
                   <div className="grid grid-cols-2 gap-4">
@@ -116,7 +120,7 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
                     </button>
                   </div>
                 </div>
-  
+
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-cyan">Finanzas</h3>
                   <div className="space-y-3">
@@ -124,7 +128,7 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
                     <input type="number" value={payout} onChange={(e) => setPayout(e.target.value)} placeholder="Payout (%) Ej: 85" className="futuristic-input w-full rounded-md p-2" required min="1" max="500" step="1" />
                   </div>
                 </div>
-  
+
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-cyan">Resultado</h3>
                   <div className="grid grid-cols-2 gap-4">
@@ -132,7 +136,7 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
                     <button onClick={() => setOutcome('LOSS')} className={`w-full futuristic-button-red font-bold py-2 px-4 rounded-lg ${outcome === 'LOSS' ? 'active' : ''}`}>PÉRDIDA</button>
                   </div>
                 </div>
-  
+
                 <button
                   onClick={handleSave}
                   disabled={!isFormComplete}
