@@ -23,7 +23,7 @@ const App: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activeView, setActiveView] = useState('dashboard');
   const [isTradeModalOpen, setIsTradeModalOpen] = useState(false);
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
   const [theme, setTheme] = useState<string>(() => localStorage.getItem('visual-theme') || 'futuristic');
   
@@ -181,8 +181,8 @@ const App: React.FC = () => {
 
 
   const handleEndSession = () => {
-    if (window.confirm('¿Confirmar fin de la sesión? Se generará un análisis de IA y luego se reiniciará el capital.')) {
-      setIsReviewModalOpen(true);
+    if (window.confirm('¿Confirmar fin de la sesión? Se reiniciará el capital.')) {
+      handleCloseReviewAndReset();
     }
   };
 
@@ -198,7 +198,6 @@ const App: React.FC = () => {
       setInitialBalance(null);
       setCurrentBalance(null);
       setSessionStartTime(null);
-      setIsReviewModalOpen(false);
       setActiveView('dashboard');
     } catch (error) {
       console.error("Error saving trades before session reset:", error);
@@ -311,16 +310,7 @@ const App: React.FC = () => {
           </div>
       )}
       
-      {isReviewModalOpen && initialBalance !== null && currentBalance !== null && (
-        <SessionReviewModal
-          isOpen={isReviewModalOpen}
-          onClose={handleCloseReviewAndReset}
-          sessionTrades={sessionTrades}
-          initialBalance={initialBalance}
-          finalBalance={currentBalance}
-          tradingPlan={tradingPlan}
-        />
-      )}
+
     </div>
   );
 };
