@@ -108,13 +108,21 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
                   <div className="grid grid-cols-2 gap-4">
                     <button
                       onClick={() => setUserAction('CALL')}
-                      className={`w-full futuristic-button font-bold py-2 px-4 rounded-lg ${userAction === 'CALL' ? 'active' : ''}`}
+                      className={`w-full font-bold py-2 px-4 rounded-lg transition-all text-sm ${
+                        userAction === 'CALL'
+                          ? 'bg-cyan-400 text-black'
+                          : 'bg-blue-600 hover:bg-blue-700 text-white'
+                      }`}
                     >
                       CALL
                     </button>
                     <button
                       onClick={() => setUserAction('PUT')}
-                      className={`w-full futuristic-button-red font-bold py-2 px-4 rounded-lg ${userAction === 'PUT' ? 'active' : ''}`}
+                      className={`w-full font-bold py-2 px-4 rounded-lg transition-all text-sm ${
+                        userAction === 'PUT'
+                          ? 'bg-red-400 text-black'
+                          : 'bg-red-600 hover:bg-red-700 text-white'
+                      }`}
                     >
                       PUT
                     </button>
@@ -124,16 +132,24 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-cyan">Finanzas</h3>
                   <div className="space-y-3">
-                    <input type="number" value={amountInvested} onChange={(e) => setAmountInvested(e.target.value)} placeholder="Monto Invertido ($)" className="futuristic-input w-full rounded-md p-2" required min="0.01" step="0.01" />
-                    <input type="number" value={payout} onChange={(e) => setPayout(e.target.value)} placeholder="Payout (%) Ej: 85" className="futuristic-input w-full rounded-md p-2" required min="1" max="500" step="1" />
+                    <input type="number" value={amountInvested} onChange={(e) => setAmountInvested(e.target.value)} placeholder="Monto Invertido ($)" className={`w-full rounded-md p-2 border ${'text-black'}`} required min="0.01" step="0.01" />
+                    <input type="number" value={payout} onChange={(e) => setPayout(e.target.value)} placeholder="Payout (%) Ej: 85" className={`w-full rounded-md p-2 border ${'text-black'}`} required min="1" max="500" step="1" />
                   </div>
                 </div>
 
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-cyan">Resultado</h3>
                   <div className="grid grid-cols-2 gap-4">
-                    <button onClick={() => setOutcome('WIN')} className={`w-full futuristic-button font-bold py-2 px-4 rounded-lg ${outcome === 'WIN' ? 'active' : ''}`}>VICTORIA</button>
-                    <button onClick={() => setOutcome('LOSS')} className={`w-full futuristic-button-red font-bold py-2 px-4 rounded-lg ${outcome === 'LOSS' ? 'active' : ''}`}>PÉRDIDA</button>
+                    <button onClick={() => setOutcome('WIN')} className={`w-full font-bold py-2 px-4 rounded-lg transition-all text-sm ${
+                      outcome === 'WIN'
+                        ? 'bg-cyan-400 text-black'
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}>VICTORIA</button>
+                    <button onClick={() => setOutcome('LOSS')} className={`w-full font-bold py-2 px-4 rounded-lg transition-all text-sm ${
+                      outcome === 'LOSS'
+                        ? 'bg-red-400 text-black'
+                        : 'bg-red-600 hover:bg-red-700 text-white'
+                    }`}>PÉRDIDA</button>
                   </div>
                 </div>
 
