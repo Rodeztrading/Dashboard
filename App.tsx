@@ -52,19 +52,33 @@ const App: React.FC = () => {
             setTradingPlan(planData);
             setTheme(savedTheme);
 
-            // Save to Firestore for future sync
-            await saveUserData(firebaseUser.uid, {
-              trades: tradesData,
-              tradingPlan: planData,
-              theme: savedTheme
-            });
+            // Save to Firestore for future sync (only if data exists)
+            if (tradesData.length > 0 || planData.trim() !== '') {
+              try {
+                await saveUserData(firebaseUser.uid, {
+                  trades: tradesData,
+                  tradingPlan: planData,
+                  theme: savedTheme
+                });
+              } catch (saveError) {
+                console.error("Error saving migrated data to Firestore:", saveError);
+                // Continue without failing - data is still in localStorage
+              }
+            }
           }
         } catch (error) {
           console.error("Error loading user data:", error);
-          // Fallback to empty state
-          setTrades([]);
-          setTradingPlan('');
-          setTheme('futuristic');
+          // Fallback to localStorage only
+          const savedTrades = localStorage.getItem(`visual-trades_${firebaseUser.uid}`);
+          const savedPlan = localStorage.getItem(`visual-trading-plan_${firebaseUser.uid}`);
+          const savedTheme = localStorage.getItem('visual-theme') || 'futuristic';
+
+          const tradesData = savedTrades ? JSON.parse(savedTrades) : [];
+          const planData = savedPlan || '';
+
+          setTrades(tradesData);
+          setTradingPlan(planData);
+          setTheme(savedTheme);
         }
       } else {
         setTrades([]);
@@ -89,6 +103,7 @@ const App: React.FC = () => {
       console.log("Trades saved successfully to Firestore");
     }).catch(error => {
       console.error("Error saving trades to Firestore:", error);
+      // Don't fail - data is still in localStorage
     });
   }, [trades, user]);
 
@@ -100,6 +115,7 @@ const App: React.FC = () => {
       console.log("Trading plan saved successfully to Firestore");
     }).catch(error => {
       console.error("Error saving trading plan to Firestore:", error);
+      // Don't fail - data is still in localStorage
     });
   }, [tradingPlan, user]);
 
@@ -129,7 +145,17 @@ const App: React.FC = () => {
         setActiveView('dashboard');
       } catch (error) {
         console.error("Error during logout:", error);
-        alert("Error al cerrar sesión. Inténtalo de nuevo.");
+        // Even if Firestore save fails, still sign out but save to localStorage as backup
+        try {
+          localStorage.setItem(`visual-trades_${user.uid}`, JSON.stringify(trades));
+          localStorage.setItem(`visual-trading-plan_${user.uid}`, tradingPlan);
+          localStorage.setItem('visual-theme', theme);
+          await signOut(auth);
+          alert("Sesión cerrada. Datos guardados localmente como respaldo.");
+        } catch (signOutError) {
+          console.error("Error signing out:", signOutError);
+          alert("Error al cerrar sesión. Inténtalo de nuevo.");
+        }
       }
     }
   };
@@ -138,6 +164,8 @@ const App: React.FC = () => {
     setTheme(newTheme);
     // Apply theme to document
     document.documentElement.setAttribute('data-theme', newTheme);
+    // Save theme to localStorage
+    localStorage.setItem('visual-theme', newTheme);
 
     // Save theme to Firestore
     if (user) {
@@ -145,12 +173,17 @@ const App: React.FC = () => {
         await updateUserTheme(user.uid, newTheme);
       } catch (error) {
         console.error("Error saving theme to Firestore:", error);
+        // Theme is still saved in localStorage
       }
     }
   };
 
   const handleTradingPlanChange = (notes: string) => {
     setTradingPlan(notes);
+    // Save to localStorage as backup
+    if (user) {
+      localStorage.setItem(`visual-trading-plan_${user.uid}`, notes);
+    }
   };
   
   const isSessionActive = initialBalance !== null;
@@ -167,11 +200,18 @@ const App: React.FC = () => {
       id: `trade_${Date.now()}_${Math.random()}`,
       createdAt: Date.now(),
     };
-    
-    setTrades(prevTrades => [...prevTrades, newTrade]);
-    
+
+    setTrades(prevTrades => {
+      const updatedTrades = [...prevTrades, newTrade];
+      // Save to localStorage as backup
+      if (user) {
+        localStorage.setItem(`visual-trades_${user.uid}`, JSON.stringify(updatedTrades));
+      }
+      return updatedTrades;
+    });
+
     if (currentBalance !== null) {
-      const profitOrLoss = tradeData.outcome === 'WIN' 
+      const profitOrLoss = tradeData.outcome === 'WIN'
         ? tradeData.amountInvested * (tradeData.payout / 100)
         : -tradeData.amountInvested;
       setCurrentBalance(prevBalance => (prevBalance !== null ? prevBalance + profitOrLoss : null));
@@ -201,7 +241,13 @@ const App: React.FC = () => {
       setActiveView('dashboard');
     } catch (error) {
       console.error("Error saving trades before session reset:", error);
-      alert("Error al guardar los datos de la sesión. Inténtalo de nuevo.");
+      // Even if Firestore fails, still reset session but save to localStorage
+      localStorage.setItem(`visual-trades_${user.uid}`, JSON.stringify(trades));
+      alert(`Sesión terminada. Saldo final: $${currentBalance?.toFixed(2)}. Datos guardados localmente.`);
+      setInitialBalance(null);
+      setCurrentBalance(null);
+      setSessionStartTime(null);
+      setActiveView('dashboard');
     }
   };
 
