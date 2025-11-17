@@ -191,10 +191,14 @@ const Sniper: React.FC<SniperProps> = (props) => {
             <div className="flex flex-col sm:flex-row gap-3">
                 <button
                     onClick={onOpenTradeModal}
-                    className={`font-bold py-2.5 px-4 rounded-md transition-all text-sm flex-1 bg-transparent border border-cyan-400 hover:bg-cyan-400 hover:text-white ${
+                    className={`font-bold py-2.5 px-4 rounded-md transition-all text-sm flex-1 ${
                         !isSessionActive
-                            ? 'bg-gray-600 text-gray-400 cursor-not-allowed border-gray-600'
-                            : theme === 'casual' ? 'text-black' : 'text-white'
+                            ? theme === 'casual'
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-300'
+                                : 'bg-gray-600 text-gray-400 cursor-not-allowed border-gray-600'
+                            : theme === 'casual'
+                            ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                            : 'bg-transparent border border-cyan-400 hover:bg-cyan-400 hover:text-white'
                     }`}
                     disabled={!isSessionActive}
                 >
@@ -204,7 +208,11 @@ const Sniper: React.FC<SniperProps> = (props) => {
                     onClick={onEndSession}
                     className={`font-bold py-2.5 px-4 rounded-md transition-all text-sm flex-1 ${
                         !isSessionActive
-                            ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                            ? theme === 'casual'
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                            : theme === 'casual'
+                            ? 'bg-red-600 hover:bg-red-700 text-white'
                             : 'bg-red-600 hover:bg-red-700 text-white'
                     }`}
                     disabled={!isSessionActive}
