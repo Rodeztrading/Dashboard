@@ -95,27 +95,35 @@ const App: React.FC = () => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // Save trades to Firestore whenever they change
+  // Save trades to Firestore and localStorage whenever they change
   useEffect(() => {
     if (!user) return;
+
+    // Always save to localStorage as backup
+    localStorage.setItem(`visual-trades_${user.uid}`, JSON.stringify(trades));
+
     console.log("Saving trades to Firestore:", trades.length, "trades");
     updateUserTrades(user.uid, trades).then(() => {
       console.log("Trades saved successfully to Firestore");
     }).catch(error => {
       console.error("Error saving trades to Firestore:", error);
-      // Don't fail - data is still in localStorage
+      // Don't fail - data is saved in localStorage
     });
   }, [trades, user]);
 
-  // Save trading plan to Firestore whenever it changes
+  // Save trading plan to Firestore and localStorage whenever it changes
   useEffect(() => {
     if (!user) return;
+
+    // Always save to localStorage as backup
+    localStorage.setItem(`visual-trading-plan_${user.uid}`, tradingPlan);
+
     console.log("Saving trading plan to Firestore:", tradingPlan.substring(0, 50) + "...");
     updateUserTradingPlan(user.uid, tradingPlan).then(() => {
       console.log("Trading plan saved successfully to Firestore");
     }).catch(error => {
       console.error("Error saving trading plan to Firestore:", error);
-      // Don't fail - data is still in localStorage
+      // Don't fail - data is saved in localStorage
     });
   }, [tradingPlan, user]);
 
@@ -180,10 +188,6 @@ const App: React.FC = () => {
 
   const handleTradingPlanChange = (notes: string) => {
     setTradingPlan(notes);
-    // Save to localStorage as backup
-    if (user) {
-      localStorage.setItem(`visual-trading-plan_${user.uid}`, notes);
-    }
   };
   
   const isSessionActive = initialBalance !== null;
@@ -201,14 +205,7 @@ const App: React.FC = () => {
       createdAt: Date.now(),
     };
 
-    setTrades(prevTrades => {
-      const updatedTrades = [...prevTrades, newTrade];
-      // Save to localStorage as backup
-      if (user) {
-        localStorage.setItem(`visual-trades_${user.uid}`, JSON.stringify(updatedTrades));
-      }
-      return updatedTrades;
-    });
+    setTrades(prevTrades => [...prevTrades, newTrade]);
 
     if (currentBalance !== null) {
       const profitOrLoss = tradeData.outcome === 'WIN'
