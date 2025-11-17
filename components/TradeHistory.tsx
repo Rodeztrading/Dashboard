@@ -34,7 +34,7 @@ const TradeHistory: React.FC<TradeHistoryProps> = ({ trades, selectedDate, onCle
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
           <div className="space-y-2">
-            <h3 className="font-bold text-center mb-1 text-glow-cyan text-sm">OPERACIÓN #{originalIndex + 1}</h3>
+            <h3 className="font-bold text-center mb-1 text-glow-cyan text-sm w-full">OPERACIÓN #{originalIndex + 1}</h3>
             <img src={`data:${trade.tradeImage.mimeType};base64,${trade.tradeImage.base64}`} alt="Trade" className="rounded-lg border-2 border-cyan/20" />
           </div>
           <div className="space-y-2">
