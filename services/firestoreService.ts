@@ -40,7 +40,14 @@ export const updateUserTrades = async (userId: string, trades: VisualTrade[]): P
     await updateDoc(userDocRef, { trades });
   } catch (error) {
     console.error("Error updating user trades in Firestore:", error);
-    throw error;
+    // If updateDoc fails (e.g., document doesn't exist), try setDoc with merge
+    try {
+      await setDoc(userDocRef, { trades }, { merge: true });
+      console.log("Fallback save succeeded for trades");
+    } catch (fallbackError) {
+      console.error("Fallback save also failed:", fallbackError);
+      throw fallbackError;
+    }
   }
 };
 

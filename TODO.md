@@ -1,19 +1,15 @@
-# TODO: Integrate Firebase Authentication and Theme System
+# TODO: Fix Data Persistence Issue on Session End and Re-login
 
-## Completed Steps
-- [x] Set up Firebase Auth in services/firebase.ts: Import Firebase config, initialize app, export auth.
-- [x] Update components/LoginScreen.tsx: Change form to email/password, integrate Firebase signInWithEmailAndPassword, handle errors.
-- [x] Update App.tsx: Replace sessionStorage with Firebase onAuthStateChanged for user state, update handleLogout to use signOut.
-- [x] Test the login functionality by running the app and attempting to log in with email/password.
-- [x] Ensure Firebase Authentication is enabled in the Firebase console (email/password provider).
-- [x] Add user profile section in Settings for display name update.
-- [x] Implement theme system with 3 styles: Futurista, Casual, Trading Pro.
-- [x] Add theme selector in Settings.
-- [x] Apply theme changes to CSS variables and component styling.
-- [x] Update Sidebar and DashboardHeader to support theme changes.
+## Steps to Complete:
+1. Add console logging to trade and plan save operations in App.tsx for debugging.
+2. Modify handleCloseReviewAndReset to await explicit save of session trades before resetting balances.
+3. Ensure Firestore saves are handled properly and add error handling.
+4. Test the fix by simulating a session end and re-login.
+5. Verify data loads correctly on mobile after changes.
 
-## Notes
-- This replaces the current username-only login with Firebase Auth.
-- User data (trades, plans) will still be stored locally per user, but authentication is now via Firebase.
-- Theme system allows switching between futuristic (default), casual (light), and trading pro (dark with green/red accents) styles.
-- Theme preference is saved in localStorage and applied on app load.
+## Progress:
+- [x] Step 1: Add logging to save operations.
+- [x] Step 2: Update handleCloseReviewAndReset.
+- [x] Step 3: Add error handling for saves.
+- [x] Step 4: Test session end and re-login.
+- [x] Step 5: Verify on mobile.

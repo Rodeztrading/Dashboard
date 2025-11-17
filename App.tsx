@@ -84,7 +84,10 @@ const App: React.FC = () => {
   // Save trades to Firestore whenever they change
   useEffect(() => {
     if (!user) return;
-    updateUserTrades(user.uid, trades).catch(error => {
+    console.log("Saving trades to Firestore:", trades.length, "trades");
+    updateUserTrades(user.uid, trades).then(() => {
+      console.log("Trades saved successfully to Firestore");
+    }).catch(error => {
       console.error("Error saving trades to Firestore:", error);
     });
   }, [trades, user]);
@@ -92,7 +95,10 @@ const App: React.FC = () => {
   // Save trading plan to Firestore whenever it changes
   useEffect(() => {
     if (!user) return;
-    updateUserTradingPlan(user.uid, tradingPlan).catch(error => {
+    console.log("Saving trading plan to Firestore:", tradingPlan.substring(0, 50) + "...");
+    updateUserTradingPlan(user.uid, tradingPlan).then(() => {
+      console.log("Trading plan saved successfully to Firestore");
+    }).catch(error => {
       console.error("Error saving trading plan to Firestore:", error);
     });
   }, [tradingPlan, user]);
@@ -169,13 +175,24 @@ const App: React.FC = () => {
     }
   };
 
-  const handleCloseReviewAndReset = () => {
-    alert(`Sesión terminada. Saldo final: $${currentBalance?.toFixed(2)}`);
-    setInitialBalance(null);
-    setCurrentBalance(null);
-    setSessionStartTime(null);
-    setIsReviewModalOpen(false);
-    setActiveView('dashboard');
+  const handleCloseReviewAndReset = async () => {
+    console.log("Ending session, saving final trades before reset...");
+    try {
+      // Ensure all trades are saved to Firestore before resetting
+      if (user) {
+        await updateUserTrades(user.uid, trades);
+        console.log("Final trades saved successfully before session reset");
+      }
+      alert(`Sesión terminada. Saldo final: $${currentBalance?.toFixed(2)}`);
+      setInitialBalance(null);
+      setCurrentBalance(null);
+      setSessionStartTime(null);
+      setIsReviewModalOpen(false);
+      setActiveView('dashboard');
+    } catch (error) {
+      console.error("Error saving trades before session reset:", error);
+      alert("Error al guardar los datos de la sesión. Inténtalo de nuevo.");
+    }
   };
 
   const handleDateSelect = (date: Date | null) => {
