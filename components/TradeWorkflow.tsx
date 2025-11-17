@@ -96,7 +96,7 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Columna Izquierda: Vista previa de Imagen */}
             <div className="flex flex-col space-y-2">
-               <div className="w-full h-48 rounded-lg flex items-center justify-center border-2 border-solid border-cyan/30 p-1">
+               <div className="w-full h-48 rounded-lg flex items-center justify-center border-2 border-solid border-gray-300 p-1">
                   {imagePreviewUrl && <img src={imagePreviewUrl} alt="Preview" className="max-h-full max-w-full rounded-lg object-contain" />}
                </div>
             </div>
@@ -132,8 +132,8 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-cyan">Finanzas</h3>
                   <div className="space-y-3">
-                    <input type="number" value={amountInvested} onChange={(e) => setAmountInvested(e.target.value)} placeholder="Monto Invertido ($)" className={`w-full rounded-md p-2 border ${'text-black'}`} required min="0.01" step="0.01" />
-                    <input type="number" value={payout} onChange={(e) => setPayout(e.target.value)} placeholder="Payout (%) Ej: 85" className={`w-full rounded-md p-2 border ${'text-black'}`} required min="1" max="500" step="1" />
+                    <input type="number" value={amountInvested} onChange={(e) => setAmountInvested(e.target.value)} placeholder="Monto Invertido ($)" className={`w-full rounded-md p-2 border border-gray-300 ${'text-black'}`} required min="0.01" step="0.01" />
+                    <input type="number" value={payout} onChange={(e) => setPayout(e.target.value)} placeholder="Payout (%) Ej: 85" className={`w-full rounded-md p-2 border border-gray-300 ${'text-black'}`} required min="1" max="500" step="1" />
                   </div>
                 </div>
 
