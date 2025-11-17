@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './services/firebase';
+import { getUserData, saveUserData, updateUserTrades, updateUserTradingPlan, updateUserTheme } from './services/firestoreService';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import Sniper from './components/Sniper';
@@ -28,30 +29,47 @@ const App: React.FC = () => {
   
   // Listen to Firebase auth state changes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        // Load data from localStorage when user logs in
         try {
-          const savedTrades = localStorage.getItem(`visual-trades_${firebaseUser.uid}`);
-          if (savedTrades) {
-            setTrades(JSON.parse(savedTrades));
+          // First try to load from Firestore
+          const userData = await getUserData(firebaseUser.uid);
+          if (userData) {
+            setTrades(userData.trades || []);
+            setTradingPlan(userData.tradingPlan || '');
+            setTheme(userData.theme || 'futuristic');
           } else {
-            setTrades([]); // Ensure empty state for new or empty profiles
-          }
+            // If no Firestore data, try localStorage for migration
+            const savedTrades = localStorage.getItem(`visual-trades_${firebaseUser.uid}`);
+            const savedPlan = localStorage.getItem(`visual-trading-plan_${firebaseUser.uid}`);
+            const savedTheme = localStorage.getItem('visual-theme') || 'futuristic';
 
-          const savedPlan = localStorage.getItem(`visual-trading-plan_${firebaseUser.uid}`);
-          if (savedPlan) {
-            setTradingPlan(savedPlan);
-          } else {
-            setTradingPlan(''); // Ensure empty state for new or empty profiles
+            const tradesData = savedTrades ? JSON.parse(savedTrades) : [];
+            const planData = savedPlan || '';
+
+            setTrades(tradesData);
+            setTradingPlan(planData);
+            setTheme(savedTheme);
+
+            // Save to Firestore for future sync
+            await saveUserData(firebaseUser.uid, {
+              trades: tradesData,
+              tradingPlan: planData,
+              theme: savedTheme
+            });
           }
         } catch (error) {
-          console.error("Error loading data from localStorage:", error);
+          console.error("Error loading user data:", error);
+          // Fallback to empty state
+          setTrades([]);
+          setTradingPlan('');
+          setTheme('futuristic');
         }
       } else {
         setTrades([]);
         setTradingPlan('');
+        setTheme('futuristic');
       }
     });
 
@@ -63,24 +81,20 @@ const App: React.FC = () => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // Save trades to localStorage whenever they change
+  // Save trades to Firestore whenever they change
   useEffect(() => {
     if (!user) return;
-    try {
-      localStorage.setItem(`visual-trades_${user.uid}`, JSON.stringify(trades));
-    } catch (error) {
-      console.error("Error saving trades to localStorage:", error);
-    }
+    updateUserTrades(user.uid, trades).catch(error => {
+      console.error("Error saving trades to Firestore:", error);
+    });
   }, [trades, user]);
 
-  // Save trading plan to localStorage whenever it changes
+  // Save trading plan to Firestore whenever it changes
   useEffect(() => {
     if (!user) return;
-    try {
-      localStorage.setItem(`visual-trading-plan_${user.uid}`, tradingPlan);
-    } catch (error) {
-      console.error("Error saving trading plan to localStorage:", error);
-    }
+    updateUserTradingPlan(user.uid, tradingPlan).catch(error => {
+      console.error("Error saving trading plan to Firestore:", error);
+    });
   }, [tradingPlan, user]);
 
 
@@ -103,11 +117,19 @@ const App: React.FC = () => {
     }
   };
 
-  const handleThemeChange = (newTheme: string) => {
+  const handleThemeChange = async (newTheme: string) => {
     setTheme(newTheme);
-    localStorage.setItem('visual-theme', newTheme);
     // Apply theme to document
     document.documentElement.setAttribute('data-theme', newTheme);
+
+    // Save theme to Firestore
+    if (user) {
+      try {
+        await updateUserTheme(user.uid, newTheme);
+      } catch (error) {
+        console.error("Error saving theme to Firestore:", error);
+      }
+    }
   };
 
   const handleTradingPlanChange = (notes: string) => {
