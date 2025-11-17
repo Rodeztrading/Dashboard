@@ -110,7 +110,17 @@ const App: React.FC = () => {
 
   const handleLogout = async () => {
     if (window.confirm("¿Estás seguro de que quieres cerrar sesión?")) {
+      console.log("Logging out, saving data before sign out...");
       try {
+        // Ensure all data is saved to Firestore before signing out
+        if (user) {
+          await Promise.all([
+            updateUserTrades(user.uid, trades),
+            updateUserTradingPlan(user.uid, tradingPlan),
+            updateUserTheme(user.uid, theme)
+          ]);
+          console.log("All user data saved successfully before logout");
+        }
         await signOut(auth);
         // Reset session-specific state
         setInitialBalance(null);
@@ -118,7 +128,8 @@ const App: React.FC = () => {
         setSessionStartTime(null);
         setActiveView('dashboard');
       } catch (error) {
-        console.error("Error signing out:", error);
+        console.error("Error during logout:", error);
+        alert("Error al cerrar sesión. Inténtalo de nuevo.");
       }
     }
   };
