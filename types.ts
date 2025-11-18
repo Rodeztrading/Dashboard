@@ -15,4 +15,8 @@ export interface VisualTrade {
   payout: number;
   aiAnalysis: string;
   createdAt: number;
+  resultImage?: {
+    base64: string;
+    mimeType: string;
+  };
 }

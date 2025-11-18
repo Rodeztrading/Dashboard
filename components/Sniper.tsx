@@ -71,11 +71,20 @@ const ImageViewer: React.FC<ImageViewerProps> = ({ trades, startIndex, onClose }
         </div>
 
         <div className="flex-grow flex items-center justify-center w-full overflow-hidden" style={{ height: 'calc(100% - 120px)' }}>
-          <img
-            src={`data:${selectedTrade.tradeImage.mimeType};base64,${selectedTrade.tradeImage.base64}`}
-            alt={`Trade ${selectedTrade.id}`}
-            className="w-auto h-auto max-w-full max-h-full object-contain rounded-lg"
-          />
+          <div className="flex gap-4 items-center justify-center">
+            <img
+              src={`data:${selectedTrade.tradeImage.mimeType};base64,${selectedTrade.tradeImage.base64}`}
+              alt={`Trade ${selectedTrade.id}`}
+              className="w-auto h-auto max-w-full max-h-full object-contain rounded-lg"
+            />
+            {selectedTrade.resultImage && (
+              <img
+                src={`data:${selectedTrade.resultImage.mimeType};base64,${selectedTrade.resultImage.base64}`}
+                alt={`Result ${selectedTrade.id}`}
+                className="w-auto h-auto max-w-full max-h-full object-contain rounded-lg"
+              />
+            )}
+          </div>
         </div>
         
         <div className="absolute bottom-4 left-4 right-4 bg-black/60 p-3 rounded-lg text-white grid grid-cols-2 md:grid-cols-4 gap-2 text-center text-sm md:text-base">
@@ -158,6 +167,9 @@ const Sniper: React.FC<SniperProps> = (props) => {
         alt={`Trade ${trade.id}`}
         className="w-full h-full object-cover rounded-lg border-2 border-transparent group-hover:border-cyan transition-all duration-300"
       />
+      {trade.resultImage && (
+        <div className="absolute top-1 right-1 w-3 h-3 bg-magenta rounded-full border border-white" title="Resultado Real"></div>
+      )}
       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-lg">
         <p className="text-white font-bold text-lg uppercase tracking-wider">Ver</p>
       </div>
@@ -228,10 +240,10 @@ const Sniper: React.FC<SniperProps> = (props) => {
         <div className="flex flex-col gap-4">
             <Calendar trades={trades} selectedDate={selectedDate} onDateSelect={onDateSelect} />
             <div className="flex-grow">
-                <TradeHistory 
-                  trades={trades} 
-                  selectedDate={selectedDate} 
-                  onClearFilter={onClearFilter} 
+                <TradeHistory
+                  trades={trades}
+                  selectedDate={selectedDate}
+                  onClearFilter={onClearFilter}
                   onViewTrade={handleViewFromHistory}
                 />
             </div>

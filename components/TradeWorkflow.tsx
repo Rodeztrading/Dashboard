@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ImageUploader from './ImageUploader';
 import type { VisualTrade } from '../types';
 
@@ -20,8 +20,43 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
   const [outcome, setOutcome] = useState<'WIN' | 'LOSS' | null>(null);
   const [amountInvested, setAmountInvested] = useState<string>('');
   const [payout, setPayout] = useState<string>('');
+  const [resultImage, setResultImage] = useState<{ base64: string; mimeType: string } | null>(null);
+  const [resultImagePreviewUrl, setResultImagePreviewUrl] = useState<string | null>(null);
+  const resultImageRef = useRef<HTMLDivElement>(null);
 
   const isDisabled = !isSessionActive;
+
+  // Handle paste events for result image
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      if (outcome === 'LOSS' && resultImageRef.current && resultImageRef.current.contains(e.target as Node)) {
+        const items = e.clipboardData?.items;
+        if (items) {
+          for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            if (item.type.indexOf('image') !== -1) {
+              const blob = item.getAsFile();
+              if (blob) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                  const base64 = (event.target?.result as string).split(',')[1];
+                  const mimeType = blob.type;
+                  const dataUrl = event.target?.result as string;
+                  setResultImage({ base64, mimeType });
+                  setResultImagePreviewUrl(dataUrl);
+                };
+                reader.readAsDataURL(blob);
+              }
+              break;
+            }
+          }
+        }
+      }
+    };
+
+    document.addEventListener('paste', handlePaste);
+    return () => document.removeEventListener('paste', handlePaste);
+  }, [outcome]);
 
   const handleImageUpload = (base64: string, mimeType: string, dataUrl: string) => {
     setTradeImage({ base64, mimeType });
@@ -44,6 +79,7 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
       amountInvested: parseFloat(amountInvested),
       payout: parseFloat(payout),
       aiAnalysis,
+      ...(outcome === 'LOSS' && resultImage && { resultImage }),
     };
 
     onSaveTrade(newTrade);
@@ -60,6 +96,8 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
     setOutcome(null);
     setAmountInvested('');
     setPayout('');
+    setResultImage(null);
+    setResultImagePreviewUrl(null);
   };
   
   const handleCancel = () => {
@@ -94,11 +132,55 @@ const TradeWorkflow: React.FC<TradeWorkflowProps> = ({ onSaveTrade, isSessionAct
       case 'details':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Columna Izquierda: Vista previa de Imagen */}
-            <div className="flex flex-col space-y-2">
+            {/* Columna Izquierda: Vista previa de Imagen y Resultado Real si es pérdida */}
+            <div className="flex flex-col space-y-4">
                <div className="w-full h-48 rounded-lg flex items-center justify-center border-2 border-solid border-gray-300 p-1">
                   {imagePreviewUrl && <img src={imagePreviewUrl} alt="Preview" className="max-h-full max-w-full rounded-lg object-contain" />}
                </div>
+               {outcome === 'LOSS' && (
+                 <div className="w-full">
+                   <h4 className="text-md font-semibold mb-2 text-cyan">Resultado Real</h4>
+                   <p className="text-sm text-text-secondary mb-2">Haz clic para pegar imagen o doble clic para seleccionar archivo.</p>
+                   <div
+                     ref={resultImageRef}
+                     className="w-full h-48 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 p-1 cursor-pointer"
+                     onDoubleClick={() => {
+                       // Trigger file input on double click
+                       const fileInput = document.getElementById('result-image-input') as HTMLInputElement;
+                       fileInput?.click();
+                     }}
+                   >
+                     {resultImagePreviewUrl ? (
+                       <img src={resultImagePreviewUrl} alt="Result Preview" className="max-h-full max-w-full rounded-lg object-contain" />
+                     ) : (
+                       <div className="text-center">
+                         <p className="text-gray-500">Haz clic para pegar imagen</p>
+                         <p className="text-xs text-gray-400">Doble clic para seleccionar archivo</p>
+                       </div>
+                     )}
+                   </div>
+                   <input
+                     id="result-image-input"
+                     type="file"
+                     accept="image/*"
+                     onChange={(e) => {
+                       const file = e.target.files?.[0];
+                       if (file) {
+                         const reader = new FileReader();
+                         reader.onload = (event) => {
+                           const base64 = (event.target?.result as string).split(',')[1];
+                           const mimeType = file.type;
+                           const dataUrl = event.target?.result as string;
+                           setResultImage({ base64, mimeType });
+                           setResultImagePreviewUrl(dataUrl);
+                         };
+                         reader.readAsDataURL(file);
+                       }
+                     }}
+                     className="hidden"
+                   />
+                 </div>
+               )}
             </div>
 
             {/* Columna Derecha: Detalles de la Operación */}
