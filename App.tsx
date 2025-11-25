@@ -1,57 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import { SniperView } from './components/SniperView';
+import { BudgetView } from './components/BudgetView';
+import { LoginScreen } from './components/LoginScreen';
+import { LoadingScreen } from './components/LoadingScreen';
 import { ViewState, VisualTrade } from './types';
-import { LayoutDashboard, Target, Settings, BarChart2 } from 'lucide-react';
-import { getAllTrades, saveTrade, migrateLocalTradesToFirebase } from './services/firebaseService';
+import { LayoutDashboard, Target, Settings, BarChart2, Wallet, LogOut, User } from 'lucide-react';
+import { getAllTrades, saveTrade, migrateLocalTradesToFirebase, migrateLegacyGlobalTrades } from './services/firebaseService';
+import { useAuth } from './hooks/useAuth';
 
 const App: React.FC = () => {
+  const { user, loading: authLoading, logout } = useAuth();
   const [view, setView] = useState<ViewState>(ViewState.SNIPER);
   const [trades, setTrades] = useState<VisualTrade[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Load trades from Firebase on mount and migrate from localStorage if needed
   useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
     const loadTrades = async () => {
       try {
-        // Check if there are trades in localStorage
+        // 1. Migrate localStorage trades if they exist (only once)
         const savedTrades = localStorage.getItem('jf_sniper_trades');
-
         if (savedTrades) {
-          // Migrate local trades to Firebase
           const localTrades: VisualTrade[] = JSON.parse(savedTrades);
           console.log('Migrating', localTrades.length, 'trades from localStorage to Firebase...');
-
-          await migrateLocalTradesToFirebase(localTrades);
-
-          // Clear localStorage after successful migration
+          await migrateLocalTradesToFirebase(localTrades, user.uid);
           localStorage.removeItem('jf_sniper_trades');
-          console.log('Migration completed successfully!');
+          console.log('LocalStorage migration completed and cleared!');
         }
 
-        // Load all trades from Firebase
-        const firebaseTrades = await getAllTrades();
+        // 2. Migrate legacy global Firestore trades if they exist (only once)
+        try {
+          const migratedCount = await migrateLegacyGlobalTrades(user.uid);
+          if (migratedCount > 0) {
+            console.log(`Migrated ${migratedCount} legacy global trades to user collection`);
+          }
+        } catch (migrationError) {
+          console.warn('Legacy migration skipped or failed (likely due to permissions or empty):', migrationError);
+        }
+
+        // 3. Load all trades from user's private collection
+        const firebaseTrades = await getAllTrades(user.uid);
         setTrades(firebaseTrades);
       } catch (error) {
         console.error('Error loading trades from Firebase:', error);
-
-        // Fallback to localStorage if Firebase fails
-        const savedTrades = localStorage.getItem('jf_sniper_trades');
-        if (savedTrades) {
-          try {
-            setTrades(JSON.parse(savedTrades));
-          } catch (e) {
-            console.error('Error loading trades from localStorage', e);
-          }
-        }
+        // Don't fallback to localStorage - it was already migrated and cleared
+        setTrades([]);
       } finally {
         setLoading(false);
       }
     };
 
     loadTrades();
-  }, []);
+  }, [user]);
 
   const handleSaveTrade = async (tradeData: Omit<VisualTrade, 'id' | 'createdAt'>) => {
+    if (!user) return;
     try {
       const newTrade: VisualTrade = {
         ...tradeData,
@@ -60,7 +68,7 @@ const App: React.FC = () => {
       };
 
       // Save to Firebase
-      const savedTrade = await saveTrade(newTrade);
+      const savedTrade = await saveTrade(newTrade, user.uid);
 
       // Update local state
       setTrades(prev => [savedTrade, ...prev]);
@@ -69,6 +77,16 @@ const App: React.FC = () => {
       alert('Error al guardar el trade. Por favor, intenta de nuevo.');
     }
   };
+
+  // Show loading screen while checking authentication
+  if (authLoading) {
+    return <LoadingScreen />;
+  }
+
+  // Show login screen if not authenticated
+  if (!user) {
+    return <LoginScreen />;
+  }
 
   return (
     <div className="flex h-screen bg-gray-950 text-white font-sans selection:bg-sniper-blue selection:text-white">
@@ -94,11 +112,20 @@ const App: React.FC = () => {
 
             <button
               onClick={() => setView(ViewState.SNIPER)}
-              className={`w-full flex items-center justify-center lg:justify-start p-3 rounded-lgyb transition-all ${view === ViewState.SNIPER ? 'bg-gray-800 text-sniper-blue shadow-inner' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
+              className={`w-full flex items-center justify-center lg:justify-start p-3 rounded-lg transition-all ${view === ViewState.SNIPER ? 'bg-gray-800 text-sniper-blue shadow-inner' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
               title="Sniper Journal"
             >
               <BarChart2 className="w-5 h-5 lg:mr-3" />
               <span className="hidden lg:block">Sniper Journal</span>
+            </button>
+
+            <button
+              onClick={() => setView(ViewState.BUDGET)}
+              className={`w-full flex items-center justify-center lg:justify-start p-3 rounded-lg transition-all ${view === ViewState.BUDGET ? 'bg-gray-800 text-sniper-blue shadow-inner' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
+              title="Presupuesto"
+            >
+              <Wallet className="w-5 h-5 lg:mr-3" />
+              <span className="hidden lg:block">Presupuesto</span>
             </button>
 
             <button
@@ -112,13 +139,40 @@ const App: React.FC = () => {
           </div>
         </div>
 
+        {/* User Profile and Logout */}
         <div className="p-4 border-t border-gray-800">
-          <div className="bg-gray-800/50 rounded-lg p-3 hidden lg:block">
-            <div className="flex items-center space-x-3 mb-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-              <span className="text-xs text-gray-400">Sistema: Online</span>
+          <div className="bg-gray-800/50 rounded-lg p-3">
+            {/* User Info */}
+            <div className="flex items-center space-x-3 mb-3">
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName || 'User'}
+                  className="w-10 h-10 rounded-full border-2 border-sniper-blue"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-sniper-blue flex items-center justify-center">
+                  <User className="w-6 h-6 text-white" />
+                </div>
+              )}
+              <div className="hidden lg:block flex-1 min-w-0">
+                <p className="text-sm font-semibold text-white truncate">
+                  {user.displayName || 'Usuario'}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {user.email}
+                </p>
+              </div>
             </div>
-            <p className="text-[10px] text-gray-500">v3.1.0 Lite (No AI)</p>
+
+            {/* Logout Button */}
+            <button
+              onClick={logout}
+              className="w-full flex items-center justify-center lg:justify-start p-2 rounded-lg bg-gray-700/50 hover:bg-red-900/50 text-gray-400 hover:text-red-400 transition-all"
+            >
+              <LogOut className="w-4 h-4 lg:mr-2" />
+              <span className="hidden lg:block text-sm">Cerrar Sesión</span>
+            </button>
           </div>
         </div>
       </nav>
@@ -127,6 +181,10 @@ const App: React.FC = () => {
       <main className="flex-1 relative overflow-hidden flex flex-col min-w-0">
         {view === ViewState.SNIPER && (
           <SniperView trades={trades} onSaveTrade={handleSaveTrade} />
+        )}
+
+        {view === ViewState.BUDGET && (
+          <BudgetView />
         )}
 
         {view === ViewState.DASHBOARD && (

@@ -29,16 +29,16 @@ Aplicación profesional para monitorear y registrar trades de trading con integr
 
 1. **Clonar el repositorio**
 
-\`\`\`bash
-git clone https://github.com/Rodeztrading/sniper-trade-monitor.git
-cd sniper-trade-monitor
-\`\`\`
+```bash
+git clone https://github.com/Rodeztrading/Dashboard.git
+cd Dashboard
+```
 
 2. **Instalar dependencias**
 
-\`\`\`bash
+```bash
 npm install
-\`\`\`
+```
 
 3. **Configurar Firebase**
 
@@ -47,9 +47,9 @@ npm install
 - Copia `.env.example` a `.env`
 - Agrega tus credenciales de Firebase en `.env`
 
-\`\`\`bash
+```bash
 cp .env.example .env
-\`\`\`
+```
 
 4. **Configurar reglas de Firebase**
 
@@ -57,9 +57,9 @@ Sigue las instrucciones en [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) para configu
 
 5. **Iniciar el servidor de desarrollo**
 
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+```
 
 La aplicación estará disponible en `http://localhost:3000`
 
@@ -71,7 +71,7 @@ La aplicación estará disponible en `http://localhost:3000`
 
 ## 📁 Estructura del Proyecto
 
-\`\`\`
+```
 sniper-trade-monitor/
 ├── config/
 │   └── firebase.ts          # Configuración de Firebase
@@ -88,13 +88,13 @@ sniper-trade-monitor/
 ├── firestore.rules          # Reglas de Firestore
 ├── storage.rules            # Reglas de Storage
 └── .env.example             # Ejemplo de variables de entorno
-\`\`\`
+```
 
 ## 🔐 Variables de Entorno
 
 Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
 
-\`\`\`env
+```env
 VITE_FIREBASE_API_KEY=tu_api_key
 VITE_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=tu_project_id
@@ -102,7 +102,7 @@ VITE_FIREBASE_STORAGE_BUCKET=tu_proyecto.firebasestorage.app
 VITE_FIREBASE_MESSAGING_SENDER_ID=tu_sender_id
 VITE_FIREBASE_APP_ID=tu_app_id
 VITE_FIREBASE_MEASUREMENT_ID=tu_measurement_id
-\`\`\`
+```
 
 ## 🔥 Configuración de Firebase
 
