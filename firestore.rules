@@ -1,0 +1,23 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Trades collection - Allow read/write for all users (adjust based on your auth needs)
+    match /trades/{tradeId} {
+      // Allow anyone to read trades
+      allow read: if true;
+      
+      // Allow anyone to create trades
+      allow create: if true;
+      
+      // Allow anyone to update/delete trades (you can add auth later)
+      allow update, delete: if true;
+    }
+    
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
