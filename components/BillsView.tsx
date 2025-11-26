@@ -42,11 +42,7 @@ export const BillsView: React.FC<BillsViewProps> = ({ accounts, onRefresh }) => 
             const pending = transactions.filter(t => t.isPending && !t.isPaid);
             setPendingBills(pending);
 
-            // Cargar deudas desde localStorage
-            const saved = localStorage.getItem(`debts_${user.uid}`);
-            if (saved) {
-                setDebts(JSON.parse(saved));
-            }
+
         } catch (e) {
             console.error('Error loading data', e);
         } finally {
@@ -80,7 +76,7 @@ export const BillsView: React.FC<BillsViewProps> = ({ accounts, onRefresh }) => 
             };
             const updated = [...debts, newDebt];
             setDebts(updated);
-            localStorage.setItem(`debts_${user.uid}`, JSON.stringify(updated));
+
 
             // Crear subcategoría en Facturas
             const categories = await getCategories(user.uid);
@@ -111,7 +107,7 @@ export const BillsView: React.FC<BillsViewProps> = ({ accounts, onRefresh }) => 
         try {
             const updated = debts.filter(d => d.id !== id);
             setDebts(updated);
-            localStorage.setItem(`debts_${user.uid}`, JSON.stringify(updated));
+
 
             // Eliminar subcategoría de Facturas
             const categories = await getCategories(user.uid);
