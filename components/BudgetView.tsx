@@ -18,6 +18,7 @@ import { AddAccountModal } from './AddAccountModal';
 import { AddTransactionModal } from './AddTransactionModal';
 import { CategoriesView } from './CategoriesView';
 import { BillsView } from './BillsView';
+import { MonthlyTransactionsModal } from './MonthlyTransactionsModal';
 import {
     Wallet,
     TrendingUp,
@@ -46,6 +47,8 @@ export const BudgetView: React.FC<BudgetViewProps> = () => {
     const [loading, setLoading] = useState(true);
     const [showAddAccount, setShowAddAccount] = useState(false);
     const [showAddTransaction, setShowAddTransaction] = useState(false);
+    const [showMonthlyModal, setShowMonthlyModal] = useState(false);
+    const [monthlyModalType, setMonthlyModalType] = useState<TransactionType>(TransactionType.INCOME);
 
     // Load data
     useEffect(() => {
@@ -154,24 +157,46 @@ export const BudgetView: React.FC<BudgetViewProps> = () => {
                         </div>
 
                         {/* Monthly Income */}
-                        <div className="bg-gradient-to-br from-green-900/50 to-green-800/30 border border-green-700/50 rounded-xl p-6">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-green-300 text-sm font-medium">Ingresos del Mes</span>
-                                <ArrowUpRight className="w-5 h-5 text-green-400" />
+                        <div
+                            onClick={() => {
+                                setMonthlyModalType(TransactionType.INCOME);
+                                setShowMonthlyModal(true);
+                            }}
+                            className="bg-gradient-to-br from-green-900/50 to-green-800/30 border border-green-700/50 rounded-xl p-6 cursor-pointer hover:border-green-500 transition-all group relative overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="flex items-center justify-between mb-2 relative z-10">
+                                <span className="text-green-300 text-sm font-medium group-hover:text-green-200">Ingresos del Mes</span>
+                                <ArrowUpRight className="w-5 h-5 text-green-400 group-hover:scale-110 transition-transform" />
                             </div>
-                            <div className="text-3xl font-bold text-white">
+                            <div className="text-3xl font-bold text-white relative z-10">
                                 +${summary.monthlyIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </div>
+                            <div className="text-xs text-green-400/70 mt-2 flex items-center relative z-10">
+                                <Calendar className="w-3 h-3 mr-1" />
+                                Ver detalle mensual
                             </div>
                         </div>
 
                         {/* Monthly Expenses */}
-                        <div className="bg-gradient-to-br from-red-900/50 to-red-800/30 border border-red-700/50 rounded-xl p-6">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-red-300 text-sm font-medium">Gastos del Mes</span>
-                                <ArrowDownRight className="w-5 h-5 text-red-400" />
+                        <div
+                            onClick={() => {
+                                setMonthlyModalType(TransactionType.EXPENSE);
+                                setShowMonthlyModal(true);
+                            }}
+                            className="bg-gradient-to-br from-red-900/50 to-red-800/30 border border-red-700/50 rounded-xl p-6 cursor-pointer hover:border-red-500 transition-all group relative overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="flex items-center justify-between mb-2 relative z-10">
+                                <span className="text-red-300 text-sm font-medium group-hover:text-red-200">Gastos del Mes</span>
+                                <ArrowDownRight className="w-5 h-5 text-red-400 group-hover:scale-110 transition-transform" />
                             </div>
-                            <div className="text-3xl font-bold text-white">
+                            <div className="text-3xl font-bold text-white relative z-10">
                                 -${summary.monthlyExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </div>
+                            <div className="text-xs text-red-400/70 mt-2 flex items-center relative z-10">
+                                <Calendar className="w-3 h-3 mr-1" />
+                                Ver detalle mensual
                             </div>
                         </div>
 
@@ -372,6 +397,12 @@ export const BudgetView: React.FC<BudgetViewProps> = () => {
                     onSave={handleAddTransaction}
                 />
             )}
+
+            <MonthlyTransactionsModal
+                isOpen={showMonthlyModal}
+                onClose={() => setShowMonthlyModal(false)}
+                initialType={monthlyModalType}
+            />
         </div>
     );
 };

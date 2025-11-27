@@ -7,7 +7,8 @@ import {
     deleteDoc,
     query,
     orderBy,
-    Timestamp
+    Timestamp,
+    writeBatch
 } from 'firebase/firestore';
 import {
     ref,
@@ -202,5 +203,55 @@ export const migrateLegacyGlobalTrades = async (userId: string): Promise<number>
     } catch (error) {
         console.error('Error migrating legacy global trades:', error);
         throw new Error('Failed to migrate legacy trades. Check permissions.');
+    }
+};
+
+/**
+ * Reset all user data by deleting all documents in user's subcollections
+ * @param userId - ID of the user
+ */
+export const resetUserData = async (userId: string): Promise<void> => {
+    try {
+        const collectionsToDelete = [
+            'trades',
+            'accounts',
+            'transactions',
+            'categories',
+            'budgets',
+            'recurringDebts'
+        ];
+
+        for (const colName of collectionsToDelete) {
+            const colRef = collection(db, `users/${userId}/${colName}`);
+            const snapshot = await getDocs(colRef);
+
+            if (snapshot.empty) continue;
+
+            // Delete in batches of 500 (Firestore limit)
+            const batches = [];
+            let batch = writeBatch(db);
+            let operationCount = 0;
+
+            snapshot.docs.forEach((doc) => {
+                batch.delete(doc.ref);
+                operationCount++;
+
+                if (operationCount === 500) {
+                    batches.push(batch.commit());
+                    batch = writeBatch(db);
+                    operationCount = 0;
+                }
+            });
+
+            if (operationCount > 0) {
+                batches.push(batch.commit());
+            }
+
+            await Promise.all(batches);
+            console.log(`Deleted collection: ${colName}`);
+        }
+    } catch (error) {
+        console.error('Error resetting user data:', error);
+        throw new Error('Failed to reset user data');
     }
 };

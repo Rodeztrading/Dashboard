@@ -26,6 +26,16 @@ export interface TradingDay {
   dayOfWeek: number;
 }
 
+export interface BudgetDay {
+  date: string; // YYYY-MM-DD
+  status: 'PENDING' | 'ACTIVE' | 'CLOSED' | 'WEEKEND';
+  income: number;
+  expenses: number;
+  net: number;
+  transactions: Transaction[];
+  dayOfWeek: number;
+}
+
 export enum ViewState {
   DASHBOARD = 'DASHBOARD',
   SNIPER = 'SNIPER',

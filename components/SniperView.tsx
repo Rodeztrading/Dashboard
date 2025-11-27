@@ -101,42 +101,38 @@ export const SniperView: React.FC<SniperViewProps> = ({ trades, onSaveTrade }) =
   };
 
   return (
-    <div className="flex h-full w-full bg-gray-950 text-gray-100 overflow-hidden relative">
-
+    <div className="flex flex-col md:flex-row h-full w-full bg-gray-950 text-gray-100 overflow-hidden relative">
       {/* LEFT COLUMN: TIMELINE */}
-      <div className="w-1/3 md:w-1/4 lg:w-1/5 border-r border-gray-800 flex flex-col h-full bg-gray-900/50">
+      <div className="w-full md:w-1/3 lg:w-1/5 border-r border-gray-800 flex flex-col h-1/3 md:h-full bg-gray-900/50 order-first md:order-none">
         <div className="p-4 border-b border-gray-800 bg-gray-900/80 backdrop-blur-sm z-10 sticky top-0">
           <h2 className="text-sm font-bold flex items-center text-white uppercase tracking-wider">
             <Activity className="w-4 h-4 mr-2 text-sniper-blue" />
             Timeline
           </h2>
         </div>
-
         <div ref={containerRef} className="flex-1 overflow-y-auto p-2 space-y-2 custom-scrollbar">
           {days.map((day) => {
             const isToday = day.date === getTodayString();
             const isSelected = selectedDay?.date === day.date;
             const hasActivity = day.trades.length > 0;
             const isProfit = day.pnl >= 0;
-
             return (
               <div
                 key={day.date}
                 ref={(el) => { dateRefs.current[day.date] = el; }}
                 onClick={() => handleDayClick(day)}
                 className={`
-                  relative p-3 rounded-lg border cursor-pointer transition-all duration-200
-                  ${isSelected ? 'bg-gray-800 border-sniper-blue ring-1 ring-sniper-blue' : 'bg-transparent border-gray-800 hover:bg-gray-800/50 hover:border-gray-700'}
-                  ${day.status === 'WEEKEND' ? 'opacity-40' : ''}
-                `}
+              relative p-3 rounded-lg border cursor-pointer transition-all duration-200
+              ${isSelected ? 'bg-gray-800 border-sniper-blue ring-1 ring-sniper-blue' : 'bg-transparent border-gray-800 hover:bg-gray-800/50 hover:border-gray-700'}
+              ${day.status === 'WEEKEND' ? 'opacity-40' : ''}
+            `}
               >
                 <div className="flex justify-between items-center mb-1">
                   <span className={`text-xs font-mono font-bold ${isToday ? 'text-sniper-blue' : 'text-gray-400'}`}>
                     {day.date}
                   </span>
-                  {isToday && <span className="w-2 h-2 rounded-full bg-sniper-blue animate-pulse"></span>}
+                  {isToday && <span className="w-2 h-2 rounded-full bg-sniper-blue animate-pulse" />}
                 </div>
-
                 {hasActivity ? (
                   <div className="flex justify-between items-end">
                     <div className="text-[10px] text-gray-500">
@@ -154,14 +150,12 @@ export const SniperView: React.FC<SniperViewProps> = ({ trades, onSaveTrade }) =
           })}
         </div>
       </div>
-
       {/* RIGHT COLUMN: DETAILS */}
-      <div className="flex-1 h-full bg-gray-950 p-4 md:p-8 overflow-y-auto">
+      <div className="flex-1 h-full bg-gray-950 p-4 md:p-8 overflow-y-auto order-last md:order-none">
         {selectedDay ? (
           <div className="max-w-5xl mx-auto">
-
             {/* Header */}
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-endkq border-b border-gray-800 pb-6 mb-6">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-gray-800 pb-6 mb-6">
               <div>
                 <div className="flex items-center space-x-3 mb-1">
                   <h1 className="text-3xl font-bold text-white font-mono">{selectedDay.date}</h1>
@@ -174,7 +168,6 @@ export const SniperView: React.FC<SniperViewProps> = ({ trades, onSaveTrade }) =
                   {selectedDay.status === 'WEEKEND' ? 'Mercado OTC / Cerrado' : 'Registro de Operaciones'}
                 </p>
               </div>
-
               <div className="mt-4 md:mt-0 text-right flex items-center space-x-6">
                 <div>
                   <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Efectividad</div>
@@ -188,7 +181,6 @@ export const SniperView: React.FC<SniperViewProps> = ({ trades, onSaveTrade }) =
                 </div>
               </div>
             </header>
-
             {/* Actions for Today */}
             {selectedDay.date === getTodayString() && (
               <div className="mb-8">
@@ -204,6 +196,8 @@ export const SniperView: React.FC<SniperViewProps> = ({ trades, onSaveTrade }) =
                 </button>
               </div>
             )}
+            {/* Trades Grid */}
+
 
             {/* Trades Grid */}
             {displayTrades.length > 0 ? (
