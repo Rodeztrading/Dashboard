@@ -4,12 +4,14 @@ import { BudgetView } from './components/BudgetView';
 import { LoginScreen } from './components/LoginScreen';
 import { LoadingScreen } from './components/LoadingScreen';
 import { ViewState, VisualTrade } from './types';
-import { LayoutDashboard, Target, Settings, BarChart2, Wallet, LogOut, User } from 'lucide-react';
+import { LayoutDashboard, Target, Settings, BarChart2, Wallet, LogOut, User, Download, Smartphone, Share } from 'lucide-react';
 import { getAllTrades, saveTrade, migrateLocalTradesToFirebase, migrateLegacyGlobalTrades, resetUserData } from './services/firebaseService';
 import { useAuth } from './hooks/useAuth';
+import { usePWAInstall } from './hooks/usePWAInstall';
 
 const App: React.FC = () => {
   const { user, loading: authLoading, logout } = useAuth();
+  const { isInstallable, installApp } = usePWAInstall();
   const [view, setView] = useState<ViewState>(ViewState.SNIPER);
   const [trades, setTrades] = useState<VisualTrade[]>([]);
   const [loading, setLoading] = useState(true);
@@ -197,10 +199,65 @@ const App: React.FC = () => {
         )}
 
         {view === ViewState.SETTINGS && (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            <div className="text-center">
-              <Settings className="w-16 h-16 mx-auto mb-4 opacity-20" />
-              <p>Configuración del Usuario</p>
+          <div className="max-w-2xl mx-auto py-8 px-4">
+            <div className="text-center mb-8">
+              <Settings className="w-16 h-16 mx-auto mb-4 text-gray-700" />
+              <h2 className="text-2xl font-bold text-white mb-2">Ajustes</h2>
+              <p className="text-gray-400">Configuración de tu cuenta y aplicación</p>
+            </div>
+
+            {/* Mobile App Section */}
+            <div className="bg-gray-800/30 rounded-xl p-6 mb-6 border border-gray-800">
+              <h3 className="text-lg font-semibold mb-4 flex items-center text-white">
+                <Smartphone className="w-5 h-5 mr-2 text-sniper-blue" />
+                Aplicación Móvil
+              </h3>
+
+              <div className="space-y-4">
+                <p className="text-gray-400 text-sm">
+                  Instala la aplicación en tu dispositivo para un acceso más rápido y mejor experiencia.
+                </p>
+
+                {isInstallable ? (
+                  <button
+                    onClick={installApp}
+                    className="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-sniper-blue hover:bg-blue-600 text-white rounded-lg transition-all shadow-lg shadow-blue-900/20 font-medium"
+                  >
+                    <Download className="w-5 h-5 mr-2" />
+                    Instalar Aplicación
+                  </button>
+                ) : (
+                  <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-800">
+                    <p className="text-sm text-gray-300 font-medium mb-2">¿Cómo instalar?</p>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Android / Chrome</p>
+                        <p className="text-sm text-gray-400">Si no ves el botón, usa el menú del navegador y selecciona "Instalar aplicación".</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">iOS (iPhone/iPad)</p>
+                        <p className="text-sm text-gray-400 flex flex-col gap-1">
+                          <span>1. Toca el botón <Share className="w-3 h-3 inline mx-1" /> Compartir</span>
+                          <span>2. Selecciona "Agregar a Inicio"</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Danger Zone */}
+            <div className="bg-red-900/10 rounded-xl p-6 border border-red-900/20">
+              <h3 className="text-lg font-semibold mb-4 flex items-center text-red-400">
+                <LogOut className="w-5 h-5 mr-2" />
+                Zona de Peligro
+              </h3>
+
+              <p className="text-gray-400 text-sm mb-4">
+                Estas acciones son destructivas y no se pueden deshacer.
+              </p>
+
               <button
                 onClick={async () => {
                   if (confirm("ADVERTENCIA: ¿Estás seguro de que quieres borrar TODOS tus datos? Esta acción eliminará permanentemente todos tus trades, cuentas y configuraciones de la nube y no se puede deshacer.")) {
@@ -218,9 +275,10 @@ const App: React.FC = () => {
                     }
                   }
                 }}
-                className="mt-4 px-4 py-2 bg-red-900/50 text-red-400 rounded hover:bg-red-900 border border-red-900 transition-colors"
+                className="w-full sm:w-auto px-4 py-2 bg-red-900/20 text-red-400 rounded hover:bg-red-900/40 border border-red-900/50 transition-colors text-sm flex items-center justify-center"
               >
-                Reinicio Total de Cuenta (Borrar Todo)
+                <LogOut className="w-4 h-4 mr-2" />
+                Reinicio Total de Cuenta
               </button>
             </div>
           </div>
