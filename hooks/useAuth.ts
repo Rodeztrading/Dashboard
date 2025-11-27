@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { User, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged, getRedirectResult } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
 
 interface AuthState {
@@ -24,13 +24,31 @@ export const useAuth = () => {
             });
         });
 
+        // Handle redirect result for mobile
+        getRedirectResult(auth).catch((error) => {
+            console.error('Error handling redirect result:', error);
+            setAuthState(prev => ({
+                ...prev,
+                loading: false,
+                error: error.message || 'Error al iniciar sesión con redirección',
+            }));
+        });
+
         return () => unsubscribe();
     }, []);
 
     const loginWithGoogle = async () => {
         try {
             setAuthState(prev => ({ ...prev, loading: true, error: null }));
-            await signInWithPopup(auth, googleProvider);
+
+            // Simple mobile detection
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            if (isMobile) {
+                await signInWithRedirect(auth, googleProvider);
+            } else {
+                await signInWithPopup(auth, googleProvider);
+            }
         } catch (error: any) {
             console.error('Error signing in with Google:', error);
             setAuthState(prev => ({

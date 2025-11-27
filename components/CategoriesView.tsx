@@ -182,7 +182,7 @@ export const CategoriesView: React.FC = () => {
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">Nombre</label>
                             <input
@@ -210,7 +210,7 @@ export const CategoriesView: React.FC = () => {
 
                     <div>
                         <label className="block text-sm text-gray-400 mb-2">Color</label>
-                        <div className="grid grid-cols-8 gap-2">
+                        <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
                             {PRESET_COLORS.map(color => (
                                 <button
                                     key={color}

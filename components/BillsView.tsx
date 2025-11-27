@@ -129,7 +129,7 @@ export const BillsView: React.FC<BillsViewProps> = ({ accounts, onRefresh }) => 
     const totalDebts = debts.reduce((a, b) => a + b.totalAmount, 0);
 
     return (
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Facturas */}
             <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
                 <div className="flex justify-between items-center mb-4">

@@ -266,77 +266,25 @@ export const BudgetView: React.FC<BudgetViewProps> = () => {
                     )}
                 </div>
 
-                {/* Recent Transactions */}
-                <div>
-                    <h2 className="text-xl font-bold text-white mb-4">Transacciones Recientes</h2>
-                    {transactions.length === 0 ? (
-                        <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center">
-                            <Calendar className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                            <p className="text-gray-400">No hay transacciones registradas</p>
-                        </div>
-                    ) : (
-                        <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-                            <div className="max-h-96 overflow-y-auto">
-                                {transactions.slice(0, 10).map(transaction => {
-                                    const account = accounts.find(a => a.id === transaction.accountId);
-                                    return (
-                                        <div
-                                            key={transaction.id}
-                                            className="flex items-center justify-between p-4 border-b border-gray-800 last:border-b-0 hover:bg-gray-800/50 transition-colors"
-                                        >
-                                            <div className="flex items-center space-x-4">
-                                                <div className={`p-2 rounded-lg ${transaction.type === TransactionType.INCOME ? 'bg-green-900/30' : 'bg-red-900/30'}`}>
-                                                    {transaction.type === TransactionType.INCOME ? (
-                                                        <TrendingUp className="w-5 h-5 text-green-400" />
-                                                    ) : (
-                                                        <TrendingDown className="w-5 h-5 text-red-400" />
-                                                    )}
-                                                </div>
-                                                <div>
-                                                    <p className="font-medium text-white">{transaction.description}</p>
-                                                    <div className="flex items-center text-xs text-gray-400 space-x-2">
-                                                        <span>{account?.name}</span>
-                                                        <span>•</span>
-                                                        <span>{new Date(transaction.date).toLocaleDateString()}</span>
-                                                        {transaction.categoryName && (
-                                                            <>
-                                                                <span>•</span>
-                                                                <span className="bg-gray-800 px-1.5 py-0.5 rounded text-gray-300">
-                                                                    {transaction.categoryName}
-                                                                </span>
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className={`text-lg font-bold ${transaction.type === TransactionType.INCOME ? 'text-green-400' : 'text-red-400'}`}>
-                                                {transaction.type === TransactionType.INCOME ? '+' : '-'}${transaction.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-                </div>
+
             </div>
         );
     };
 
     return (
-        <div className="h-full overflow-y-auto bg-gray-950 p-6">
+        <div className="h-full overflow-y-auto bg-gray-950 p-4 md:p-6">
             <div className="max-w-7xl mx-auto space-y-6">
                 {/* Header */}
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-white">Presupuesto</h1>
                         <p className="text-gray-400 mt-1">Gestión de finanzas personales</p>
                     </div>
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-3 w-full md:w-auto">
                         {activeTab === 'ACCOUNTS' && (
                             <button
                                 onClick={() => setShowAddTransaction(true)}
-                                className="px-4 py-2 bg-sniper-blue hover:bg-blue-600 text-white rounded-lg flex items-center space-x-2 transition-colors"
+                                className="px-4 py-2 bg-sniper-blue hover:bg-blue-600 text-white rounded-lg flex items-center justify-center space-x-2 transition-colors w-full md:w-auto"
                                 disabled={accounts.length === 0}
                             >
                                 <Plus className="w-4 h-4" />
@@ -347,10 +295,10 @@ export const BudgetView: React.FC<BudgetViewProps> = () => {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex space-x-1 bg-gray-900 p-1 rounded-lg w-fit">
+                <div className="flex space-x-1 bg-gray-900 p-1 rounded-lg w-full md:w-fit overflow-x-auto">
                     <button
                         onClick={() => setActiveTab('ACCOUNTS')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 ${activeTab === 'ACCOUNTS' ? 'bg-gray-800 text-white shadow-sm' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 whitespace-nowrap ${activeTab === 'ACCOUNTS' ? 'bg-gray-800 text-white shadow-sm' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
                             }`}
                     >
                         <Wallet className="w-4 h-4" />
@@ -358,7 +306,7 @@ export const BudgetView: React.FC<BudgetViewProps> = () => {
                     </button>
                     <button
                         onClick={() => setActiveTab('CATEGORIES')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 ${activeTab === 'CATEGORIES' ? 'bg-gray-800 text-white shadow-sm' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 whitespace-nowrap ${activeTab === 'CATEGORIES' ? 'bg-gray-800 text-white shadow-sm' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
                             }`}
                     >
                         <List className="w-4 h-4" />
@@ -366,7 +314,7 @@ export const BudgetView: React.FC<BudgetViewProps> = () => {
                     </button>
                     <button
                         onClick={() => setActiveTab('BILLS')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 ${activeTab === 'BILLS' ? 'bg-gray-800 text-white shadow-sm' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 whitespace-nowrap ${activeTab === 'BILLS' ? 'bg-gray-800 text-white shadow-sm' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
                             }`}
                     >
                         <FileText className="w-4 h-4" />
