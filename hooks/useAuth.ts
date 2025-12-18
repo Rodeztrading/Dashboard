@@ -16,36 +16,49 @@ export const useAuth = () => {
     });
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setAuthState(prev => ({
-                ...prev,
-                user,
-                loading: false,
-                error: null,
-            }));
-        });
+        let isMounted = true;
 
-        // Handle redirect result for mobile
-        getRedirectResult(auth)
-            .then((result) => {
-                if (result?.user) {
+        // handleRedirectResult can be slow, especially on mobile
+        const handleRedirect = async () => {
+            try {
+                const result = await getRedirectResult(auth);
+                if (isMounted && result?.user) {
                     setAuthState(prev => ({
                         ...prev,
                         user: result.user,
                         loading: false,
+                        error: null
                     }));
                 }
-            })
-            .catch((error) => {
+            } catch (error: any) {
                 console.error('Error handling redirect result:', error);
+                if (isMounted) {
+                    setAuthState(prev => ({
+                        ...prev,
+                        loading: false,
+                        error: error.message || 'Error al completar el inicio de sesión'
+                    }));
+                }
+            }
+        };
+
+        handleRedirect();
+
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (isMounted) {
                 setAuthState(prev => ({
                     ...prev,
+                    user,
                     loading: false,
-                    error: error.message || 'Error al iniciar sesión con redirección',
+                    error: null,
                 }));
-            });
+            }
+        });
 
-        return () => unsubscribe();
+        return () => {
+            isMounted = false;
+            unsubscribe();
+        };
     }, []);
 
     const loginWithGoogle = async () => {
@@ -56,6 +69,7 @@ export const useAuth = () => {
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (isMobile) {
+                // For mobile, redirect is usually more reliable than popup
                 await signInWithRedirect(auth, googleProvider);
             } else {
                 await signInWithPopup(auth, googleProvider);

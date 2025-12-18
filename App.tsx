@@ -27,11 +27,16 @@ const App: React.FC = () => {
       // 1. Migrate localStorage trades if they exist (only once)
       const savedTrades = localStorage.getItem('jf_sniper_trades');
       if (savedTrades) {
-        const localTrades: VisualTrade[] = JSON.parse(savedTrades);
-        console.log('Migrating', localTrades.length, 'trades from localStorage to Firebase...');
-        await migrateLocalTradesToFirebase(localTrades, user.uid);
-        localStorage.removeItem('jf_sniper_trades');
-        console.log('LocalStorage migration completed and cleared!');
+        try {
+          const localTrades: VisualTrade[] = JSON.parse(savedTrades);
+          console.log('Migrating', localTrades.length, 'trades from localStorage to Firebase...');
+          await migrateLocalTradesToFirebase(localTrades, user.uid);
+          localStorage.removeItem('jf_sniper_trades');
+          console.log('LocalStorage migration completed and cleared!');
+        } catch (parseError) {
+          console.error('Error parsing local trades:', parseError);
+          localStorage.removeItem('jf_sniper_trades'); // Clear corrupted data
+        }
       }
 
       // 2. Migrate legacy global Firestore trades if they exist (only once)
