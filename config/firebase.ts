@@ -12,7 +12,7 @@ const firebaseConfig = {
   storageBucket: "trading-30254.firebasestorage.app",
   messagingSenderId: "247034649250",
   appId: "1:247034649250:web:dbcd059defdd9444de55fb",
-  measurementId: "G-XXXXXXXXXX"
+  measurementId: ""
 };
 
 // Initialize Firebase
@@ -21,9 +21,10 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase services
 export const db = getFirestore(app);
 export const storage = getStorage(app);
-export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 export const auth = getAuth(app);
+export const analytics = typeof window !== 'undefined' && firebaseConfig.measurementId ? getAnalytics(app) : null;
 export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 // Enable offline persistence for Firestore
 if (typeof window !== 'undefined') {

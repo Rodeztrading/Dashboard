@@ -1,5 +1,14 @@
 import { useState, useEffect } from 'react';
-import { User, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged, getRedirectResult } from 'firebase/auth';
+import {
+    User,
+    signInWithPopup,
+    signInWithRedirect,
+    signOut,
+    onAuthStateChanged,
+    getRedirectResult,
+    setPersistence,
+    browserLocalPersistence
+} from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
 
 interface AuthState {
@@ -18,8 +27,13 @@ export const useAuth = () => {
     useEffect(() => {
         let isMounted = true;
 
-        // handleRedirectResult can be slow, especially on mobile
-        const handleRedirect = async () => {
+        // Ensure persistence is set to Local
+        setPersistence(auth, browserLocalPersistence).catch(err => {
+            console.error('Persistence error:', err);
+        });
+
+        // Check for redirect result on mount
+        const initAuth = async () => {
             try {
                 const result = await getRedirectResult(auth);
                 if (isMounted && result?.user) {
@@ -31,18 +45,18 @@ export const useAuth = () => {
                     }));
                 }
             } catch (error: any) {
-                console.error('Error handling redirect result:', error);
+                console.error('Auth redirect error:', error);
                 if (isMounted) {
                     setAuthState(prev => ({
                         ...prev,
-                        loading: false,
-                        error: error.message || 'Error al completar el inicio de sesión'
+                        error: `Error de autenticación: ${error.message}`,
+                        loading: false
                     }));
                 }
             }
         };
 
-        handleRedirect();
+        initAuth();
 
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (isMounted) {
@@ -65,22 +79,30 @@ export const useAuth = () => {
         try {
             setAuthState(prev => ({ ...prev, loading: true, error: null }));
 
-            // Simple mobile detection
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // For mobile, redirect is usually more reliable than popup
+                // For mobile, we explicitly use redirect as it's the standard for Firebase on small screens
                 await signInWithRedirect(auth, googleProvider);
             } else {
                 await signInWithPopup(auth, googleProvider);
             }
         } catch (error: any) {
-            console.error('Error signing in with Google:', error);
-            setAuthState(prev => ({
-                ...prev,
-                loading: false,
-                error: error.message || 'Error al iniciar sesión',
-            }));
+            console.error('Login error:', error);
+            if (error.code === 'auth/popup-blocked') {
+                // Fallback to redirect if popup is blocked
+                try {
+                    await signInWithRedirect(auth, googleProvider);
+                } catch (redirError: any) {
+                    setAuthState(prev => ({ ...prev, loading: false, error: redirError.message }));
+                }
+            } else {
+                setAuthState(prev => ({
+                    ...prev,
+                    loading: false,
+                    error: error.message || 'Error al iniciar sesión',
+                }));
+            }
         }
     };
 
