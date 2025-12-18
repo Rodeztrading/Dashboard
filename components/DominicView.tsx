@@ -75,8 +75,8 @@ export const DominicView: React.FC = () => {
         }
 
         // Calculate based on pattern
-        // Epoch: Jan 3, 2024 (Wednesday) -> Dad start of 2‑day rotation
-        const epoch = new Date('2024-01-03T00:00:00');
+        // Epoch: Jan 1, 2024 (Monday) -> Dad start of 2‑day rotation
+        const epoch = new Date('2024-01-01T00:00:00');
         // Reset time parts to avoid timezone issues affecting diff
         const d = new Date(date);
         d.setHours(0, 0, 0, 0);
