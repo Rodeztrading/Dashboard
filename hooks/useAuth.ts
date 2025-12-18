@@ -17,22 +17,33 @@ export const useAuth = () => {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setAuthState({
+            setAuthState(prev => ({
+                ...prev,
                 user,
                 loading: false,
                 error: null,
-            });
+            }));
         });
 
         // Handle redirect result for mobile
-        getRedirectResult(auth).catch((error) => {
-            console.error('Error handling redirect result:', error);
-            setAuthState(prev => ({
-                ...prev,
-                loading: false,
-                error: error.message || 'Error al iniciar sesión con redirección',
-            }));
-        });
+        getRedirectResult(auth)
+            .then((result) => {
+                if (result?.user) {
+                    setAuthState(prev => ({
+                        ...prev,
+                        user: result.user,
+                        loading: false,
+                    }));
+                }
+            })
+            .catch((error) => {
+                console.error('Error handling redirect result:', error);
+                setAuthState(prev => ({
+                    ...prev,
+                    loading: false,
+                    error: error.message || 'Error al iniciar sesión con redirección',
+                }));
+            });
 
         return () => unsubscribe();
     }, []);
