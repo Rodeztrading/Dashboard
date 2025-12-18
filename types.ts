@@ -40,6 +40,7 @@ export enum ViewState {
   DASHBOARD = 'DASHBOARD',
   SNIPER = 'SNIPER',
   BUDGET = 'BUDGET',
+  DOMINIC = 'DOMINIC',
   SETTINGS = 'SETTINGS'
 }
 
@@ -154,4 +155,26 @@ export interface FinancialSummary {
     amount: number;
     percentage: number;
   }[];
+}
+
+// ============================================
+// DOMINIC / CUSTODY MODULE TYPES
+// ============================================
+
+export interface CustodyOverride {
+  id: string;
+  date: string; // YYYY-MM-DD
+  responsible: 'MOM' | 'DAD';
+  originalResponsible: 'MOM' | 'DAD'; // the original assignment before any override
+  note?: string;
+  createdAt: number;
+}
+
+export interface CustodyDay {
+  date: Date;
+  dateString: string; // YYYY-MM-DD
+  responsible: 'MOM' | 'DAD';
+  isOverride: boolean;
+  isToday: boolean;
+  isCurrentMonth: boolean;
 }

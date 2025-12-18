@@ -8,7 +8,8 @@ import {
     query,
     orderBy,
     Timestamp,
-    writeBatch
+    writeBatch,
+    setDoc
 } from 'firebase/firestore';
 import {
     ref,
@@ -17,7 +18,7 @@ import {
     deleteObject
 } from 'firebase/storage';
 import { db, storage, auth } from '../config/firebase';
-import { VisualTrade } from '../types';
+import { VisualTrade, CustodyOverride } from '../types';
 
 /**
  * Upload an image to Firebase Storage
@@ -218,7 +219,8 @@ export const resetUserData = async (userId: string): Promise<void> => {
             'transactions',
             'categories',
             'budgets',
-            'recurringDebts'
+            'recurringDebts',
+            'custody_overrides'
         ];
 
         for (const colName of collectionsToDelete) {
@@ -253,5 +255,64 @@ export const resetUserData = async (userId: string): Promise<void> => {
     } catch (error) {
         console.error('Error resetting user data:', error);
         throw new Error('Failed to reset user data');
+    }
+};
+
+/**
+ * Save a custody override to Firestore
+ * @param override - Override data
+ * @param userId - ID of the user
+ */
+export const saveCustodyOverride = async (override: Omit<CustodyOverride, 'id' | 'createdAt'>): Promise<CustodyOverride> => {
+    try {
+        const overrideData = {
+            ...override,
+            createdAt: Date.now(),
+        };
+
+        // Use date as ID to ensure one override per day
+        const docRef = doc(db, 'custody_overrides', override.date);
+        await setDoc(docRef, overrideData);
+
+        return {
+            ...overrideData,
+            id: override.date,
+        };
+    } catch (error) {
+        console.error('Error saving custody override:', error);
+        throw new Error('Failed to save custody override');
+    }
+};
+
+/**
+ * Get all custody overrides for a user
+ * @param userId - ID of the user
+ */
+export const getCustodyOverrides = async (): Promise<CustodyOverride[]> => {
+    try {
+        const q = query(collection(db, 'custody_overrides'));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({
+            ...doc.data(),
+            id: doc.id,
+        } as CustodyOverride));
+    } catch (error) {
+        console.error('Error getting custody overrides:', error);
+        throw new Error('Failed to get custody overrides');
+    }
+};
+
+/**
+ * Delete a custody override
+ * @param date - Date of the override (YYYY-MM-DD)
+ * @param userId - ID of the user
+ */
+export const deleteCustodyOverride = async (date: string): Promise<void> => {
+    try {
+        const docRef = doc(db, 'custody_overrides', date);
+        await deleteDoc(docRef);
+    } catch (error) {
+        console.error('Error deleting custody override:', error);
+        throw new Error('Failed to delete custody override');
     }
 };

@@ -3,8 +3,9 @@ import { SniperView } from './components/SniperView';
 import { BudgetView } from './components/BudgetView';
 import { LoginScreen } from './components/LoginScreen';
 import { LoadingScreen } from './components/LoadingScreen';
+import { DominicView } from './components/DominicView';
 import { ViewState, VisualTrade } from './types';
-import { LayoutDashboard, Target, Settings, BarChart2, Wallet, LogOut, User, Download, Smartphone, Share } from 'lucide-react';
+import { LayoutDashboard, Target, Settings, BarChart2, Wallet, LogOut, User, Download, Smartphone, Share, Users } from 'lucide-react';
 import { getAllTrades, saveTrade, migrateLocalTradesToFirebase, migrateLegacyGlobalTrades, resetUserData } from './services/firebaseService';
 import { useAuth } from './hooks/useAuth';
 import { usePWAInstall } from './hooks/usePWAInstall';
@@ -131,6 +132,15 @@ const App: React.FC = () => {
             </button>
 
             <button
+              onClick={() => setView(ViewState.DOMINIC)}
+              className={`w-full flex items-center justify-center lg:justify-start p-3 rounded-lg transition-all ${view === ViewState.DOMINIC ? 'bg-gray-800 text-sniper-blue shadow-inner' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
+              title="Dominic"
+            >
+              <Users className="w-5 h-5 lg:mr-3" />
+              <span className="hidden lg:block">Dominic</span>
+            </button>
+
+            <button
               onClick={() => setView(ViewState.SETTINGS)}
               className={`w-full flex items-center justify-center lg:justify-start p-3 rounded-lg transition-all ${view === ViewState.SETTINGS ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
               title="Settings"
@@ -187,6 +197,10 @@ const App: React.FC = () => {
 
         {view === ViewState.BUDGET && (
           <BudgetView />
+        )}
+
+        {view === ViewState.DOMINIC && (
+          <DominicView />
         )}
 
         {view === ViewState.DASHBOARD && (
