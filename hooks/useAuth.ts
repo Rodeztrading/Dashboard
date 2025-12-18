@@ -26,52 +26,56 @@ export const useAuth = () => {
 
     useEffect(() => {
         let isMounted = true;
+        let redirectChecked = false;
+        let authResolved = false;
+        let authUser: User | null = null;
 
-        // Ensure persistence is set to Local
-        setPersistence(auth, browserLocalPersistence).catch(err => {
-            console.error('Persistence error:', err);
-        });
-
-        // Check for redirect result on mount
-        const initAuth = async () => {
-            try {
-                const result = await getRedirectResult(auth);
-                if (isMounted && result?.user) {
-                    setAuthState(prev => ({
-                        ...prev,
-                        user: result.user,
-                        loading: false,
-                        error: null
-                    }));
-                }
-            } catch (error: any) {
-                console.error('Auth redirect error:', error);
-                if (isMounted) {
-                    setAuthState(prev => ({
-                        ...prev,
-                        error: `Error de autenticación: ${error.message}`,
-                        loading: false
-                    }));
-                }
+        const updateState = () => {
+            if (isMounted && redirectChecked && authResolved) {
+                setAuthState({
+                    user: authUser,
+                    loading: false,
+                    error: null
+                });
             }
         };
 
-        initAuth();
+        // Force local persistence
+        setPersistence(auth, browserLocalPersistence).catch(console.error);
 
+        // 1. Check redirect result
+        getRedirectResult(auth)
+            .then((result) => {
+                if (result?.user) authUser = result.user;
+                redirectChecked = true;
+                updateState();
+            })
+            .catch((error) => {
+                console.error('Redirect error:', error);
+                redirectChecked = true;
+                updateState();
+            });
+
+        // 2. Listen for auth changes
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (isMounted) {
-                setAuthState(prev => ({
-                    ...prev,
-                    user,
-                    loading: false,
-                    error: null,
-                }));
-            }
+            if (user) authUser = user;
+            authResolved = true;
+            updateState();
         });
+
+        // Safety timeout
+        const timeout = setTimeout(() => {
+            if (isMounted && (!redirectChecked || !authResolved)) {
+                redirectChecked = true;
+                authResolved = true;
+                updateState();
+            }
+        }, 3000);
 
         return () => {
             isMounted = false;
             unsubscribe();
+            clearTimeout(timeout);
         };
     }, []);
 
@@ -82,27 +86,26 @@ export const useAuth = () => {
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // For mobile, we explicitly use redirect as it's the standard for Firebase on small screens
+                // Mobile devices strictly use redirect for better reliability
                 await signInWithRedirect(auth, googleProvider);
             } else {
-                await signInWithPopup(auth, googleProvider);
+                try {
+                    await signInWithPopup(auth, googleProvider);
+                } catch (popupError: any) {
+                    if (popupError.code === 'auth/popup-blocked') {
+                        await signInWithRedirect(auth, googleProvider);
+                    } else {
+                        throw popupError;
+                    }
+                }
             }
         } catch (error: any) {
-            console.error('Login error:', error);
-            if (error.code === 'auth/popup-blocked') {
-                // Fallback to redirect if popup is blocked
-                try {
-                    await signInWithRedirect(auth, googleProvider);
-                } catch (redirError: any) {
-                    setAuthState(prev => ({ ...prev, loading: false, error: redirError.message }));
-                }
-            } else {
-                setAuthState(prev => ({
-                    ...prev,
-                    loading: false,
-                    error: error.message || 'Error al iniciar sesión',
-                }));
-            }
+            console.error('Detailed login error:', error);
+            setAuthState(prev => ({
+                ...prev,
+                loading: false,
+                error: error.message || 'No se pudo iniciar sesión. Por favor intenta de nuevo.'
+            }));
         }
     };
 
