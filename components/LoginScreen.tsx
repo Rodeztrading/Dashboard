@@ -68,8 +68,14 @@ export const LoginScreen: React.FC = () => {
 
                     {/* Error Message */}
                     {error && (
-                        <div className="mt-4 p-3 bg-red-900/20 border border-red-900/50 rounded-lg">
-                            <p className="text-red-400 text-sm text-center">{error}</p>
+                        <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200 text-sm flex flex-col space-y-2">
+                            <div className="flex items-center space-x-2">
+                                <span className="font-bold">Error de Acceso:</span>
+                            </div>
+                            <p>{error}</p>
+                            <div className="pt-2 mt-2 border-t border-red-500/30 text-[10px] opacity-70">
+                                Browser: {navigator.userAgent.slice(0, 50)}...
+                            </div>
                         </div>
                     )}
 

@@ -88,23 +88,21 @@ export const useAuth = () => {
             console.log('[Auth] Initiating Google Login...');
             setAuthState(prev => ({ ...prev, loading: true, error: null }));
 
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            console.log('[Auth] Device type:', isMobile ? 'Mobile' : 'Desktop');
+            // Try Popup first (works on many modern mobile browsers and is much more stable)
+            console.log('[Auth] Attempting signInWithPopup...');
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                console.log('[Auth] Popup success!', result.user.email);
+            } catch (popupError: any) {
+                console.warn('[Auth] Popup failed or blocked:', popupError.code);
 
-            if (isMobile) {
-                console.log('[Auth] Using signInWithRedirect');
-                await signInWithRedirect(auth, googleProvider);
-            } else {
-                console.log('[Auth] Using signInWithPopup');
-                try {
-                    await signInWithPopup(auth, googleProvider);
-                } catch (popupError: any) {
-                    if (popupError.code === 'auth/popup-blocked') {
-                        console.warn('[Auth] Popup blocked, falling back to redirect');
-                        await signInWithRedirect(auth, googleProvider);
-                    } else {
-                        throw popupError;
-                    }
+                // If it's a mobile device and popup failed/blocked, fall back to redirect
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                if (isMobile || popupError.code === 'auth/popup-blocked') {
+                    console.log('[Auth] Falling back to signInWithRedirect...');
+                    await signInWithRedirect(auth, googleProvider);
+                } else {
+                    throw popupError;
                 }
             }
         } catch (error: any) {
@@ -112,7 +110,7 @@ export const useAuth = () => {
             setAuthState(prev => ({
                 ...prev,
                 loading: false,
-                error: error.message || 'Error al iniciar sesión'
+                error: `Error (${error.code || 'unknown'}): ${error.message}`
             }));
         }
     };
