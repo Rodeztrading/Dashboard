@@ -1,0 +1,24 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Trades images - Allow read/write for all users
+    match /trades/{tradeId}/{allPaths=**} {
+      // Allow anyone to read images
+      allow read: if true;
+      
+      // Allow anyone to upload images (max 10MB)
+      allow write: if request.resource.size < 10 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+      
+      // Allow anyone to delete images
+      allow delete: if true;
+    }
+    
+    // Default deny all other paths
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

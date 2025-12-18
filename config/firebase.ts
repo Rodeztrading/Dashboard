@@ -1,0 +1,41 @@
+import { initializeApp } from 'firebase/app';
+import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
+import { getAnalytics } from 'firebase/analytics';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+
+// Firebase configuration from environment variables
+const firebaseConfig = {
+  apiKey: "AIzaSyCuyD8rm-gZCHIV8wt_Wh0GK8ufHSm7YzU",
+  authDomain: "trading-30254.firebaseapp.com",
+  projectId: "trading-30254",
+  storageBucket: "trading-30254.firebasestorage.app",
+  messagingSenderId: "247034649250",
+  appId: "1:247034649250:web:dbcd059defdd9444de55fb",
+  measurementId: "G-XXXXXXXXXX"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialize Firebase services
+export const db = getFirestore(app);
+export const storage = getStorage(app);
+export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
+
+// Enable offline persistence for Firestore
+if (typeof window !== 'undefined') {
+  enableIndexedDbPersistence(db).catch((err) => {
+    if (err.code === 'failed-precondition') {
+      // Multiple tabs open, persistence can only be enabled in one tab at a time
+      console.warn('Firestore persistence failed: Multiple tabs open');
+    } else if (err.code === 'unimplemented') {
+      // The current browser doesn't support persistence
+      console.warn('Firestore persistence not supported in this browser');
+    }
+  });
+}
+
+export default app;
