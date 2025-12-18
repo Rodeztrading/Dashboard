@@ -27,72 +27,80 @@ export const useAuth = () => {
     useEffect(() => {
         let isMounted = true;
         let redirectChecked = false;
-        let authResolved = false;
-        let authUser: User | null = null;
+        let authStateReceived = false;
+        let finalUser: User | null = null;
 
-        const updateState = () => {
-            if (isMounted && redirectChecked && authResolved) {
+        console.log('[Auth] Hook initialized, checking state...');
+
+        const finalize = () => {
+            if (isMounted && redirectChecked && authStateReceived) {
+                console.log('[Auth] Finalizing auth state. User:', finalUser?.email || 'Guest');
                 setAuthState({
-                    user: authUser,
+                    user: finalUser,
                     loading: false,
                     error: null
                 });
             }
         };
 
-        // Force local persistence
-        setPersistence(auth, browserLocalPersistence).catch(console.error);
-
-        // 1. Check redirect result
+        // 1. Check for redirect result (Crucial for Mobile)
         getRedirectResult(auth)
             .then((result) => {
-                if (result?.user) authUser = result.user;
+                console.log('[Auth] Redirect check complete. Result:', !!result?.user);
+                if (result?.user) finalUser = result.user;
                 redirectChecked = true;
-                updateState();
+                finalize();
             })
             .catch((error) => {
-                console.error('Redirect error:', error);
+                console.error('[Auth] Redirect error:', error);
                 redirectChecked = true;
-                updateState();
+                finalize();
             });
 
         // 2. Listen for auth changes
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) authUser = user;
-            authResolved = true;
-            updateState();
+            console.log('[Auth] onAuthStateChanged fired. User:', user?.email || 'null');
+            // If we already have a user from redirect, prioritize it
+            if (!finalUser) finalUser = user;
+            authStateReceived = true;
+            finalize();
         });
 
-        // Safety timeout
-        const timeout = setTimeout(() => {
-            if (isMounted && (!redirectChecked || !authResolved)) {
+        // 3. Fallback timeout (Safety for slow redirects)
+        const safetyTimeout = setTimeout(() => {
+            if (isMounted && authState.loading) {
+                console.warn('[Auth] Safety timeout reached, forcing load.');
                 redirectChecked = true;
-                authResolved = true;
-                updateState();
+                authStateReceived = true;
+                finalize();
             }
-        }, 3000);
+        }, 10000); // 10s is plenty for redirect
 
         return () => {
             isMounted = false;
             unsubscribe();
-            clearTimeout(timeout);
+            clearTimeout(safetyTimeout);
         };
     }, []);
 
     const loginWithGoogle = async () => {
         try {
+            console.log('[Auth] Initiating Google Login...');
             setAuthState(prev => ({ ...prev, loading: true, error: null }));
 
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            console.log('[Auth] Device type:', isMobile ? 'Mobile' : 'Desktop');
 
             if (isMobile) {
-                // Mobile devices strictly use redirect for better reliability
+                console.log('[Auth] Using signInWithRedirect');
                 await signInWithRedirect(auth, googleProvider);
             } else {
+                console.log('[Auth] Using signInWithPopup');
                 try {
                     await signInWithPopup(auth, googleProvider);
                 } catch (popupError: any) {
                     if (popupError.code === 'auth/popup-blocked') {
+                        console.warn('[Auth] Popup blocked, falling back to redirect');
                         await signInWithRedirect(auth, googleProvider);
                     } else {
                         throw popupError;
@@ -100,11 +108,11 @@ export const useAuth = () => {
                 }
             }
         } catch (error: any) {
-            console.error('Detailed login error:', error);
+            console.error('[Auth] Login error:', error);
             setAuthState(prev => ({
                 ...prev,
                 loading: false,
-                error: error.message || 'No se pudo iniciar sesión. Por favor intenta de nuevo.'
+                error: error.message || 'Error al iniciar sesión'
             }));
         }
     };

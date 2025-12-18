@@ -26,17 +26,17 @@ export const analytics = typeof window !== 'undefined' && firebaseConfig.measure
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
 
+/*
 // Enable offline persistence for Firestore
 if (typeof window !== 'undefined') {
   enableIndexedDbPersistence(db).catch((err) => {
     if (err.code === 'failed-precondition') {
-      // Multiple tabs open, persistence can only be enabled in one tab at a time
-      console.warn('Firestore persistence failed: Multiple tabs open');
+      console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
     } else if (err.code === 'unimplemented') {
-      // The current browser doesn't support persistence
-      console.warn('Firestore persistence not supported in this browser');
+      console.warn('The current browser doesn\'t support all of the features necessary to enable persistence');
     }
   });
 }
+*/
 
 export default app;
