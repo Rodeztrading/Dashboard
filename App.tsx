@@ -101,8 +101,14 @@ const App: React.FC = () => {
       {/* Sidebar Navigation */}
       <nav className="w-16 md:w-20 lg:w-64 bg-gray-900 border-r border-gray-800 flex flex-col justify-between shrink-0">
         <div>
-          <div className="h-28 flex items-center justify-center lg:justify-start lg:px-8 border-b border-gray-800">
-            <img src="/logo_rodez.png" alt="RODEZ" className="h-16 lg:h-20 w-auto object-contain transition-all" />
+          <div className="h-24 flex items-center justify-center lg:justify-start lg:px-6 border-b border-gray-800 overflow-hidden">
+            <div className="relative h-16 w-32 lg:w-48 flex items-center justify-center lg:justify-start overflow-hidden">
+              <img
+                src="/logo_rodez.png"
+                alt="RODEZ"
+                className="h-32 lg:h-40 w-auto object-contain scale-[1.8] transform origin-center lg:origin-left"
+              />
+            </div>
           </div>
 
           <div className="py-6 space-y-2 px-2 md:px-3">

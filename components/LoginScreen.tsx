@@ -10,8 +10,12 @@ export const LoginScreen: React.FC = () => {
             <div className="max-w-md w-full">
                 {/* Logo and Title */}
                 <div className="text-center mb-8">
-                    <div className="w-64 h-64 md:w-80 md:h-80 mx-auto mb-8">
-                        <img src="/logo_rodez.png" alt="RODEZ Logo" className="w-full h-full object-contain" />
+                    <div className="w-64 h-32 md:w-80 md:h-40 mx-auto mb-8 overflow-hidden flex items-center justify-center">
+                        <img
+                            src="/logo_rodez.png"
+                            alt="RODEZ Logo"
+                            className="w-full h-full object-contain scale-[2.2] transform origin-center"
+                        />
                     </div>
                 </div>
 
