@@ -9,7 +9,7 @@ export const LoadingScreen: React.FC = () => {
                     <img
                         src="/logo_rodez.png"
                         alt="RODEZ Logo"
-                        className="w-full h-full object-contain scale-[2.2] transform origin-center"
+                        className="w-full h-full object-contain scale-[1.8] transform origin-center"
                     />
                 </div>
                 <p className="text-gray-400 mt-4">Cargando...</p>
