@@ -326,7 +326,7 @@ export const BudgetView: React.FC<BudgetViewProps> = () => {
                 <div className="mt-6">
                     {activeTab === 'ACCOUNTS' && renderAccountsTab()}
                     {activeTab === 'CATEGORIES' && <CategoriesView />}
-                    {activeTab === 'BILLS' && <BillsView accounts={accounts} onRefresh={refreshAccounts} />}
+                    {activeTab === 'BILLS' && <BillsView accounts={accounts} onRefresh={loadData} />}
                 </div>
             </div>
 
