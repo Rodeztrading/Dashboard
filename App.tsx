@@ -101,22 +101,12 @@ const App: React.FC = () => {
       {/* Sidebar Navigation */}
       <nav className="w-16 md:w-20 lg:w-64 bg-gray-900 border-r border-gray-800 flex flex-col justify-between shrink-0">
         <div>
-          <div className="h-16 flex items-center justify-center lg:justify-start lg:px-6 border-b border-gray-800">
-            <div className="w-8 h-8 bg-rodez-red rounded-md flex items-center justify-center mr-0 lg:mr-3 shadow-lg shadow-red-900/50">
-              <Target className="text-white w-5 h-5" />
-            </div>
-            <span className="hidden lg:block font-bold text-lg tracking-wider text-rodez-red uppercase tracking-widest">RODEZ</span>
+          <div className="h-24 flex items-center justify-center lg:justify-start lg:px-6 border-b border-gray-800">
+            <img src="/logo_rodez.png" alt="RODEZ" className="h-12 w-auto object-contain" />
           </div>
 
           <div className="py-6 space-y-2 px-2 md:px-3">
-            <button
-              onClick={() => setView(ViewState.DASHBOARD)}
-              className={`w-full flex items-center justify-center lg:justify-start p-3 rounded-lg transition-all ${view === ViewState.DASHBOARD ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
-              title="Dashboard"
-            >
-              <LayoutDashboard className="w-5 h-5 lg:mr-3" />
-              <span className="hidden lg:block">Dashboard</span>
-            </button>
+
 
             <button
               onClick={() => setView(ViewState.SNIPER)}
@@ -208,14 +198,7 @@ const App: React.FC = () => {
           <DominicView />
         )}
 
-        {view === ViewState.DASHBOARD && (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            <div className="text-center">
-              <LayoutDashboard className="w-16 h-16 mx-auto mb-4 opacity-20" />
-              <p>Dashboard General - Próximamente</p>
-            </div>
-          </div>
-        )}
+
 
         {view === ViewState.SETTINGS && (
           <div className="max-w-2xl mx-auto py-8 px-4">

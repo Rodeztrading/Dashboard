@@ -10,15 +10,9 @@ export const LoginScreen: React.FC = () => {
             <div className="max-w-md w-full">
                 {/* Logo and Title */}
                 <div className="text-center mb-8">
-                    <div className="w-32 h-32 mx-auto mb-6">
+                    <div className="w-48 h-48 mx-auto mb-8">
                         <img src="/logo_rodez.png" alt="RODEZ Logo" className="w-full h-full object-contain" />
                     </div>
-                    <h1 className="text-4xl font-bold text-white mb-2 tracking-widest text-rodez-red uppercase">
-                        RODEZ
-                    </h1>
-                    <p className="text-gray-400 text-lg">
-                        Tu Journal de Trading Profesional
-                    </p>
                 </div>
 
                 {/* Login Card */}

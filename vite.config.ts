@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
         manifest: {
-          name: 'RODEZ Trade Monitor',
+          name: 'RODEZ',
           short_name: 'RODEZ',
           description: 'Bitácora de trading profesional RODEZ',
           theme_color: '#0d1117',
