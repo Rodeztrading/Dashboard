@@ -10,7 +10,7 @@ export const LoginScreen: React.FC = () => {
             <div className="max-w-md w-full">
                 {/* Logo and Title */}
                 <div className="text-center mb-8">
-                    <div className="w-48 h-48 mx-auto mb-8">
+                    <div className="w-64 h-64 md:w-80 md:h-80 mx-auto mb-8">
                         <img src="/logo_rodez.png" alt="RODEZ Logo" className="w-full h-full object-contain" />
                     </div>
                 </div>
