@@ -102,11 +102,11 @@ const App: React.FC = () => {
       <nav className="w-16 md:w-20 lg:w-64 bg-gray-900 border-r border-gray-800 flex flex-col justify-between shrink-0">
         <div>
           <div className="h-24 flex items-center justify-center lg:justify-start lg:px-6 border-b border-gray-800 overflow-hidden">
-            <div className="relative h-16 w-32 lg:w-48 flex items-center justify-center lg:justify-start overflow-hidden">
+            <div className="relative h-16 w-36 lg:w-56 flex items-center justify-center lg:justify-start overflow-hidden">
               <img
                 src="/logo_rodez.png"
                 alt="RODEZ"
-                className="h-32 lg:h-40 w-auto object-contain scale-[1.8] transform origin-center lg:origin-left"
+                className="h-32 lg:h-40 w-auto object-contain scale-[1.5] transform origin-center lg:origin-left"
               />
             </div>
           </div>
@@ -117,10 +117,10 @@ const App: React.FC = () => {
             <button
               onClick={() => setView(ViewState.SNIPER)}
               className={`w-full flex items-center justify-center lg:justify-start p-3 rounded-lg transition-all ${view === ViewState.SNIPER ? 'bg-gray-800 text-rodez-red shadow-inner' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
-              title="RODEZ Journal"
+              title="RODEZ"
             >
               <BarChart2 className="w-5 h-5 lg:mr-3" />
-              <span className="hidden lg:block">RODEZ Journal</span>
+              <span className="hidden lg:block">RODEZ</span>
             </button>
 
             <button
