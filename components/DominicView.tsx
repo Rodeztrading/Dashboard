@@ -179,12 +179,12 @@ export const DominicView: React.FC = () => {
     const monthName = currentDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
 
     return (
-        <div className="h-full overflow-y-auto bg-gray-950 p-4 md:p-6">
+        <div className="h-full overflow-y-auto bg-gray-950 p-2 md:p-6">
             <div className="max-w-5xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-white">Calendario de Dominic</h1>
-                        <p className="text-gray-400 mt-1">Gestión de custodia compartida</p>
+                        <h1 className="text-xl md:text-3xl font-bold text-white">Dominic</h1>
+                        <p className="text-xs md:text-sm text-gray-400 mt-0.5 md:mt-1">Custodia compartida</p>
                     </div>
 
                     <div className="flex items-center space-x-4">
@@ -210,7 +210,7 @@ export const DominicView: React.FC = () => {
                         >
                             <ChevronLeft className="w-6 h-6" />
                         </button>
-                        <h2 className="text-xl font-bold text-white capitalize">{monthName}</h2>
+                        <h2 className="text-base md:text-xl font-bold text-white capitalize">{monthName}</h2>
                         <button
                             onClick={() => changeMonth(1)}
                             className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-300"
@@ -221,8 +221,8 @@ export const DominicView: React.FC = () => {
 
                     {/* Days Header */}
                     <div className="grid grid-cols-7 border-b border-gray-800 bg-gray-900">
-                        {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map(day => (
-                            <div key={day} className="py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
+                        {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map(day => (
+                            <div key={day} className="py-2 text-center text-[10px] md:text-sm font-medium text-gray-500 uppercase tracking-wider">
                                 {day}
                             </div>
                         ))}
@@ -241,14 +241,14 @@ export const DominicView: React.FC = () => {
                                     key={index}
                                     onClick={() => handleDayClick(date)}
                                     className={`
-                                        min-h-[100px] p-2 border-b border-r border-gray-800 relative cursor-pointer transition-all hover:bg-gray-800/50
+                                        min-h-[70px] md:min-h-[100px] p-1 md:p-2 border-b border-r border-gray-800 relative cursor-pointer transition-all hover:bg-gray-800/50
                                         ${!isCurrentMonth ? 'opacity-30 bg-gray-950' : ''}
                                         ${isToday ? 'ring-1 ring-inset ring-rodez-red' : ''}
                                     `}
                                 >
                                     <div className="flex justify-between items-start">
                                         <span className={`
-                                            text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full
+                                            text-[10px] md:text-sm font-medium w-5 h-5 md:w-7 md:h-7 flex items-center justify-center rounded-full
                                             ${isToday ? 'bg-rodez-red text-white' : 'text-gray-400'}
                                         `}>
                                             {date.getDate()}
@@ -259,19 +259,19 @@ export const DominicView: React.FC = () => {
                                                 className="text-yellow-500 hover:text-yellow-400"
                                                 title="Restaurar original"
                                             >
-                                                <RefreshCw className="w-3 h-3" />
+                                                <RefreshCw className="w-2.5 h-2.5 md:w-3 md:h-3" />
                                             </button>
                                         )}
                                     </div>
 
                                     {isOverride && originalResponsible && (
-                                        <div className="text-xs text-gray-500 text-center mt-1">
+                                        <div className="text-[8px] md:text-xs text-gray-500 text-center mt-0.5">
                                             {originalResponsible === 'MOM' ? 'Mamá' : 'Papá'}
                                         </div>
                                     )}
 
                                     <div className={`
-                                        mt-2 p-2 rounded-lg text-xs font-bold text-center uppercase tracking-wide
+                                        mt-1 p-1 md:p-2 rounded md:rounded-lg text-[9px] md:text-xs font-bold text-center uppercase tracking-wide
                                         ${responsible === 'MOM'
                                             ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30'
                                             : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'}
