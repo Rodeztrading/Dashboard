@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SniperView } from './components/SniperView';
+import { RodezView } from './components/RodezView';
 import { BudgetView } from './components/BudgetView';
 import { LoginScreen } from './components/LoginScreen';
 import { LoadingScreen } from './components/LoadingScreen';
@@ -13,7 +13,7 @@ import { usePWAInstall } from './hooks/usePWAInstall';
 const App: React.FC = () => {
   const { user, loading: authLoading, logout } = useAuth();
   const { isInstallable, installApp } = usePWAInstall();
-  const [view, setView] = useState<ViewState>(ViewState.SNIPER);
+  const [view, setView] = useState<ViewState>(ViewState.SNIPER); // ViewState.SNIPER will remain the enum value for logic consistency unless I change the enum too, but for UI it will be RODEZ
   const [trades, setTrades] = useState<VisualTrade[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,17 +25,17 @@ const App: React.FC = () => {
 
     try {
       // 1. Migrate localStorage trades if they exist (only once)
-      const savedTrades = localStorage.getItem('jf_sniper_trades');
+      const savedTrades = localStorage.getItem('jf_rodez_trades');
       if (savedTrades) {
         try {
           const localTrades: VisualTrade[] = JSON.parse(savedTrades);
           console.log('Migrating', localTrades.length, 'trades from localStorage to Firebase...');
           await migrateLocalTradesToFirebase(localTrades, user.uid);
-          localStorage.removeItem('jf_sniper_trades');
+          localStorage.removeItem('jf_rodez_trades');
           console.log('LocalStorage migration completed and cleared!');
         } catch (parseError) {
           console.error('Error parsing local trades:', parseError);
-          localStorage.removeItem('jf_sniper_trades'); // Clear corrupted data
+          localStorage.removeItem('jf_rodez_trades'); // Clear corrupted data
         }
       }
 
@@ -97,15 +97,15 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-950 text-white font-sans selection:bg-sniper-blue selection:text-white">
+    <div className="flex h-screen bg-gray-950 text-white font-sans selection:bg-rodez-red selection:text-white">
       {/* Sidebar Navigation */}
       <nav className="w-16 md:w-20 lg:w-64 bg-gray-900 border-r border-gray-800 flex flex-col justify-between shrink-0">
         <div>
           <div className="h-16 flex items-center justify-center lg:justify-start lg:px-6 border-b border-gray-800">
-            <div className="w-8 h-8 bg-sniper-blue rounded-md flex items-center justify-center mr-0 lg:mr-3 shadow-lg shadow-blue-900/50">
+            <div className="w-8 h-8 bg-rodez-red rounded-md flex items-center justify-center mr-0 lg:mr-3 shadow-lg shadow-red-900/50">
               <Target className="text-white w-5 h-5" />
             </div>
-            <span className="hidden lg:block font-bold text-lg tracking-wider">SNIPER<span className="text-sniper-blue">.PRO</span></span>
+            <span className="hidden lg:block font-bold text-lg tracking-wider text-rodez-red uppercase tracking-widest">RODEZ</span>
           </div>
 
           <div className="py-6 space-y-2 px-2 md:px-3">
@@ -120,16 +120,16 @@ const App: React.FC = () => {
 
             <button
               onClick={() => setView(ViewState.SNIPER)}
-              className={`w-full flex items-center justify-center lg:justify-start p-3 rounded-lg transition-all ${view === ViewState.SNIPER ? 'bg-gray-800 text-sniper-blue shadow-inner' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
-              title="Sniper Journal"
+              className={`w-full flex items-center justify-center lg:justify-start p-3 rounded-lg transition-all ${view === ViewState.SNIPER ? 'bg-gray-800 text-rodez-red shadow-inner' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
+              title="RODEZ Journal"
             >
               <BarChart2 className="w-5 h-5 lg:mr-3" />
-              <span className="hidden lg:block">Sniper Journal</span>
+              <span className="hidden lg:block">RODEZ Journal</span>
             </button>
 
             <button
               onClick={() => setView(ViewState.BUDGET)}
-              className={`w-full flex items-center justify-center lg:justify-start p-3 rounded-lg transition-all ${view === ViewState.BUDGET ? 'bg-gray-800 text-sniper-blue shadow-inner' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
+              className={`w-full flex items-center justify-center lg:justify-start p-3 rounded-lg transition-all ${view === ViewState.BUDGET ? 'bg-gray-800 text-rodez-red shadow-inner' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
               title="Presupuesto"
             >
               <Wallet className="w-5 h-5 lg:mr-3" />
@@ -138,7 +138,7 @@ const App: React.FC = () => {
 
             <button
               onClick={() => setView(ViewState.DOMINIC)}
-              className={`w-full flex items-center justify-center lg:justify-start p-3 rounded-lg transition-all ${view === ViewState.DOMINIC ? 'bg-gray-800 text-sniper-blue shadow-inner' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
+              className={`w-full flex items-center justify-center lg:justify-start p-3 rounded-lg transition-all ${view === ViewState.DOMINIC ? 'bg-gray-800 text-rodez-red shadow-inner' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
               title="Dominic"
             >
               <Users className="w-5 h-5 lg:mr-3" />
@@ -165,10 +165,10 @@ const App: React.FC = () => {
                 <img
                   src={user.photoURL}
                   alt={user.displayName || 'User'}
-                  className="w-10 h-10 rounded-full border-2 border-sniper-blue"
+                  className="w-10 h-10 rounded-full border-2 border-rodez-red"
                 />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-sniper-blue flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-rodez-red flex items-center justify-center">
                   <User className="w-6 h-6 text-white" />
                 </div>
               )}
@@ -197,7 +197,7 @@ const App: React.FC = () => {
       {/* Main Content Area */}
       <main className="flex-1 relative overflow-hidden flex flex-col min-w-0">
         {view === ViewState.SNIPER && (
-          <SniperView trades={trades} onSaveTrade={handleSaveTrade} />
+          <RodezView trades={trades} onSaveTrade={handleSaveTrade} />
         )}
 
         {view === ViewState.BUDGET && (
@@ -228,19 +228,19 @@ const App: React.FC = () => {
             {/* Mobile App Section */}
             <div className="bg-gray-800/30 rounded-xl p-6 mb-6 border border-gray-800">
               <h3 className="text-lg font-semibold mb-4 flex items-center text-white">
-                <Smartphone className="w-5 h-5 mr-2 text-sniper-blue" />
-                Aplicación Móvil
+                <Smartphone className="w-5 h-5 mr-2 text-rodez-red" />
+                Aplicación Móvil RODEZ
               </h3>
 
               <div className="space-y-4">
                 <p className="text-gray-400 text-sm">
-                  Instala la aplicación en tu dispositivo para un acceso más rápido y mejor experiencia.
+                  Instala RODEZ en tu dispositivo para un acceso más rápido y mejor experiencia.
                 </p>
 
                 {isInstallable ? (
                   <button
                     onClick={installApp}
-                    className="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-sniper-blue hover:bg-blue-600 text-white rounded-lg transition-all shadow-lg shadow-blue-900/20 font-medium"
+                    className="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-rodez-red hover:bg-red-600 text-white rounded-lg transition-all shadow-lg shadow-red-900/20 font-medium"
                   >
                     <Download className="w-5 h-5 mr-2" />
                     Instalar Aplicación
@@ -284,7 +284,7 @@ const App: React.FC = () => {
                       setLoading(true);
                       await resetUserData(user.uid);
                       setTrades([]);
-                      localStorage.removeItem('jf_sniper_trades');
+                      localStorage.removeItem('jf_rodez_trades');
                       alert("Cuenta reiniciada correctamente. La aplicación se recargará.");
                       window.location.reload();
                     } catch (error) {

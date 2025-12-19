@@ -65,11 +65,11 @@ export const AddAccountModal: React.FC<AddAccountModalProps> = ({ onClose, onSav
                                 type="button"
                                 onClick={() => setType(item.type)}
                                 className={`flex flex-col items-center p-3 rounded-lg border transition-all ${type === item.type
-                                        ? 'bg-sniper-blue/20 border-sniper-blue text-white'
-                                        : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700'
+                                    ? 'bg-rodez-red/20 border-rodez-red text-white'
+                                    : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700'
                                     }`}
                             >
-                                <item.icon className={`w-6 h-6 mb-2 ${type === item.type ? 'text-sniper-blue' : ''}`} />
+                                <item.icon className={`w-6 h-6 mb-2 ${type === item.type ? 'text-rodez-red' : ''}`} />
                                 <span className="text-xs">{item.label}</span>
                             </button>
                         ))}
@@ -83,7 +83,7 @@ export const AddAccountModal: React.FC<AddAccountModalProps> = ({ onClose, onSav
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="Ej. Billetera Principal, Banco X"
-                            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-sniper-blue focus:border-transparent outline-none transition-all"
+                            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-rodez-red focus:border-transparent outline-none transition-all"
                             required
                         />
                     </div>
@@ -98,7 +98,7 @@ export const AddAccountModal: React.FC<AddAccountModalProps> = ({ onClose, onSav
                                 onChange={(e) => setBalance(e.target.value)}
                                 placeholder="0.00"
                                 step="0.01"
-                                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-sniper-blue focus:border-transparent outline-none transition-all"
+                                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-rodez-red focus:border-transparent outline-none transition-all"
                                 required
                             />
                         </div>
@@ -107,7 +107,7 @@ export const AddAccountModal: React.FC<AddAccountModalProps> = ({ onClose, onSav
                             <select
                                 value={currency}
                                 onChange={(e) => setCurrency(e.target.value)}
-                                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-sniper-blue focus:border-transparent outline-none transition-all"
+                                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-rodez-red focus:border-transparent outline-none transition-all"
                             >
                                 <option value="USD">USD ($)</option>
                                 <option value="EUR">EUR (€)</option>
@@ -145,7 +145,7 @@ export const AddAccountModal: React.FC<AddAccountModalProps> = ({ onClose, onSav
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 px-4 py-3 bg-sniper-blue hover:bg-blue-600 text-white rounded-lg transition-colors font-medium flex items-center justify-center"
+                            className="flex-1 px-4 py-3 bg-rodez-red hover:bg-blue-600 text-white rounded-lg transition-colors font-medium flex items-center justify-center"
                         >
                             {loading ? (
                                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

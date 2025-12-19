@@ -165,7 +165,7 @@ export const CategoriesView: React.FC = () => {
                 {/* Botón deshabilitado - Solo 5 categorías fijas permitidas */}
                 {/* <button
                 onClick={() => setShowAddCategory(true)}
-                className="px-4 py-2 bg-sniper-blue hover:bg-blue-600 text-white rounded-lg flex items-center space-x-2 transition-colors text-sm"
+                className="px-4 py-2 bg-rodez-red hover:bg-blue-600 text-white rounded-lg flex items-center space-x-2 transition-colors text-sm"
             >
                 <Plus className="w-4 h-4" />
                 <span>Nueva Categoría</span>
@@ -190,7 +190,7 @@ export const CategoriesView: React.FC = () => {
                                 value={newCategoryName}
                                 onChange={(e) => setNewCategoryName(e.target.value)}
                                 placeholder="Ej. Entretenimiento"
-                                className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-sniper-blue"
+                                className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-rodez-red"
                                 autoFocus
                             />
                         </div>
@@ -200,7 +200,7 @@ export const CategoriesView: React.FC = () => {
                             <select
                                 value={newCategoryType}
                                 onChange={(e) => setNewCategoryType(e.target.value as TransactionType)}
-                                className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-sniper-blue"
+                                className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-rodez-red"
                             >
                                 <option value={TransactionType.EXPENSE}>Gasto</option>
                                 <option value={TransactionType.INCOME}>Ingreso</option>
@@ -231,7 +231,7 @@ export const CategoriesView: React.FC = () => {
                         </button>
                         <button
                             onClick={handleAddNewCategory}
-                            className="px-4 py-2 bg-sniper-blue hover:bg-blue-600 text-white rounded transition-colors"
+                            className="px-4 py-2 bg-rodez-red hover:bg-blue-600 text-white rounded transition-colors"
                         >
                             Crear
                         </button>
@@ -262,7 +262,7 @@ export const CategoriesView: React.FC = () => {
                                                 type="text"
                                                 value={editingCategoryName}
                                                 onChange={(e) => setEditingCategoryName(e.target.value)}
-                                                className="flex-1 bg-gray-900 border border-gray-600 rounded px-3 py-1.5 text-white focus:outline-none focus:border-sniper-blue"
+                                                className="flex-1 bg-gray-900 border border-gray-600 rounded px-3 py-1.5 text-white focus:outline-none focus:border-rodez-red"
                                                 autoFocus
                                             />
                                             <div className="flex space-x-1">
@@ -318,7 +318,7 @@ export const CategoriesView: React.FC = () => {
                                                 setAddingSubcategoryTo(category.id);
                                                 setExpandedCategories(prev => new Set(prev).add(category.id));
                                             }}
-                                            className="p-2 text-sniper-blue hover:bg-gray-700 rounded-full transition-colors"
+                                            className="p-2 text-rodez-red hover:bg-gray-700 rounded-full transition-colors"
                                             title="Agregar Subcategoría"
                                         >
                                             <Plus className="w-4 h-4" />
@@ -368,7 +368,7 @@ export const CategoriesView: React.FC = () => {
                                                 value={newSubcategoryName}
                                                 onChange={(e) => setNewSubcategoryName(e.target.value)}
                                                 placeholder="Nombre de subcategoría..."
-                                                className="flex-1 bg-gray-900 border border-gray-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-sniper-blue"
+                                                className="flex-1 bg-gray-900 border border-gray-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-rodez-red"
                                                 autoFocus
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter') handleAddSubcategory(category.id);
@@ -380,7 +380,7 @@ export const CategoriesView: React.FC = () => {
                                             />
                                             <button
                                                 onClick={() => handleAddSubcategory(category.id)}
-                                                className="p-1.5 bg-sniper-blue text-white rounded hover:bg-blue-600"
+                                                className="p-1.5 bg-rodez-red text-white rounded hover:bg-blue-600"
                                             >
                                                 <Save className="w-4 h-4" />
                                             </button>

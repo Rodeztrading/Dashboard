@@ -4,12 +4,12 @@ import { TradingDay, VisualTrade } from '../types';
 import { TradeWorkflow } from './TradeWorkflow';
 import { Activity, Crosshair, Clock, Plus, TrendingUp, TrendingDown, Maximize2, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
-interface SniperViewProps {
+interface RodezViewProps {
   trades: VisualTrade[];
   onSaveTrade: (trade: Omit<VisualTrade, 'id' | 'createdAt'>) => void;
 }
 
-export const SniperView: React.FC<SniperViewProps> = ({ trades, onSaveTrade }) => {
+export const RodezView: React.FC<RodezViewProps> = ({ trades, onSaveTrade }) => {
   const [days, setDays] = useState<TradingDay[]>([]);
   const [selectedDay, setSelectedDay] = useState<TradingDay | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -106,7 +106,7 @@ export const SniperView: React.FC<SniperViewProps> = ({ trades, onSaveTrade }) =
       <div className="w-full md:w-1/3 lg:w-1/5 border-r border-gray-800 flex flex-col h-1/3 md:h-full bg-gray-900/50 order-first md:order-none">
         <div className="p-4 border-b border-gray-800 bg-gray-900/80 backdrop-blur-sm z-10 sticky top-0">
           <h2 className="text-sm font-bold flex items-center text-white uppercase tracking-wider">
-            <Activity className="w-4 h-4 mr-2 text-sniper-blue" />
+            <Activity className="w-4 h-4 mr-2 text-rodez-red" />
             Timeline
           </h2>
         </div>
@@ -123,12 +123,12 @@ export const SniperView: React.FC<SniperViewProps> = ({ trades, onSaveTrade }) =
                 onClick={() => handleDayClick(day)}
                 className={`
               relative p-3 rounded-lg border cursor-pointer transition-all duration-200
-              ${isSelected ? 'bg-gray-800 border-sniper-blue ring-1 ring-sniper-blue' : 'bg-transparent border-gray-800 hover:bg-gray-800/50 hover:border-gray-700'}
+              ${isSelected ? 'bg-gray-800 border-rodez-red ring-1 ring-rodez-red' : 'bg-transparent border-gray-800 hover:bg-gray-800/50 hover:border-gray-700'}
               ${day.status === 'WEEKEND' ? 'opacity-40' : ''}
             `}
               >
                 <div className="flex justify-between items-center mb-1">
-                  <span className={`text-xs font-mono font-bold ${isToday ? 'text-sniper-blue' : 'text-gray-400'}`}>
+                  <span className={`text-xs font-mono font-bold ${isToday ? 'text-rodez-red' : 'text-gray-400'}`}>
                     {day.date}
                   </span>
                   {isToday && <span className="w-2 h-2 rounded-full bg-sniper-blue animate-pulse" />}
@@ -160,7 +160,7 @@ export const SniperView: React.FC<SniperViewProps> = ({ trades, onSaveTrade }) =
                 <div className="flex items-center space-x-3 mb-1">
                   <h1 className="text-3xl font-bold text-white font-mono">{selectedDay.date}</h1>
                   {selectedDay.date === getTodayString() && (
-                    <span className="bg-sniper-blue text-black text-xs font-bold px-2 py-1 rounded">SESIÓN ACTIVA</span>
+                    <span className="bg-rodez-red text-white text-xs font-bold px-2 py-1 rounded">SESIÓN ACTIVA</span>
                   )}
                 </div>
                 <p className="text-gray-500 text-sm flex items-center">
@@ -186,10 +186,10 @@ export const SniperView: React.FC<SniperViewProps> = ({ trades, onSaveTrade }) =
               <div className="mb-8">
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="w-full bg-gray-900 border border-gray-700 hover:border-sniper-blue hover:bg-gray-800 text-white p-6 rounded-xl border-dashed flex flex-col items-center justify-center transition-all group"
+                  className="w-full bg-gray-900 border border-gray-700 hover:border-rodez-red hover:bg-gray-800 text-white p-6 rounded-xl border-dashed flex flex-col items-center justify-center transition-all group"
                 >
-                  <div className="bg-sniper-blue/10 p-3 rounded-full mb-3 group-hover:bg-sniper-blue/20 transition-colors">
-                    <Plus className="w-8 h-8 text-sniper-blue" />
+                  <div className="bg-rodez-red/10 group-hover:bg-rodez-red/20">
+                    <Plus className="w-8 h-8 text-rodez-red" />
                   </div>
                   <span className="font-bold text-lg">Registrar Nueva Operación</span>
                   <span className="text-sm text-gray-500 mt-1">Sube captura y registra resultados</span>
@@ -288,7 +288,7 @@ export const SniperView: React.FC<SniperViewProps> = ({ trades, onSaveTrade }) =
           <button
             onClick={(e) => { e.stopPropagation(); navigateTrade('prev'); }}
             disabled={displayTrades.indexOf(viewTrade) === 0}
-            className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-gray-800/50 hover:bg-sniper-blue hover:text-black text-white rounded-full transition-all disabled:opacity-0 disabled:pointer-events-none z-50"
+            className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-gray-800/50 hover:bg-rodez-red hover:text-black text-white rounded-full transition-all disabled:opacity-0 disabled:pointer-events-none z-50"
           >
             <ChevronLeft size={32} />
           </button>
@@ -296,7 +296,7 @@ export const SniperView: React.FC<SniperViewProps> = ({ trades, onSaveTrade }) =
           <button
             onClick={(e) => { e.stopPropagation(); navigateTrade('next'); }}
             disabled={displayTrades.indexOf(viewTrade) === displayTrades.length - 1}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-gray-800/50 hover:bg-sniper-blue hover:text-black text-white rounded-full transition-all disabled:opacity-0 disabled:pointer-events-none z-50"
+            className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-gray-800/50 hover:bg-rodez-red hover:text-black text-white rounded-full transition-all disabled:opacity-0 disabled:pointer-events-none z-50"
           >
             <ChevronRight size={32} />
           </button>

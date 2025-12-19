@@ -1,4 +1,4 @@
-# 🎯 Sniper Trade Monitor
+# 🎯 RODEZ Trade Monitor
 
 Aplicación profesional para monitorear y registrar trades de trading con integración Firebase.
 
@@ -72,14 +72,14 @@ La aplicación estará disponible en `http://localhost:3000`
 ## 📁 Estructura del Proyecto
 
 ```
-sniper-trade-monitor/
+rodez-trade-monitor/
 ├── config/
 │   └── firebase.ts          # Configuración de Firebase
 ├── services/
 │   ├── firebaseService.ts   # Servicios de Firestore y Storage
 │   └── geminiService.ts     # Servicio de IA (opcional)
 ├── components/
-│   ├── SniperView.tsx       # Vista principal de trades
+│   ├── RodezView.tsx    # Vista principal de trades
 │   └── ...
 ├── utils/
 │   └── ...

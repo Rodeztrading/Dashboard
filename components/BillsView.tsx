@@ -186,7 +186,7 @@ export const BillsView: React.FC<BillsViewProps> = ({ accounts, onRefresh }) => 
                         </h2>
                         <p className="text-sm text-gray-400 mt-1">Registro de deudas a largo plazo</p>
                     </div>
-                    <button onClick={() => setShowAddDebt(true)} className="px-4 py-2 bg-sniper-blue hover:bg-blue-600 text-white rounded-lg flex items-center space-x-2 text-sm"><Plus className="w-4 h-4" /> <span>Nueva Deuda</span></button>
+                    <button onClick={() => setShowAddDebt(true)} className="px-4 py-2 bg-rodez-red hover:bg-blue-600 text-white rounded-lg flex items-center space-x-2 text-sm"><Plus className="w-4 h-4" /> <span>Nueva Deuda</span></button>
                 </div>
 
                 {/* Formulario */}
@@ -196,16 +196,16 @@ export const BillsView: React.FC<BillsViewProps> = ({ accounts, onRefresh }) => 
                         <div className="space-y-3">
                             <div>
                                 <label className="block text-sm text-gray-400 mb-1">Nombre de la Deuda</label>
-                                <input type="text" value={debtName} onChange={e => setDebtName(e.target.value)} placeholder="Ej: Préstamo Carro" className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-sniper-blue" />
+                                <input type="text" value={debtName} onChange={e => setDebtName(e.target.value)} placeholder="Ej: Préstamo Carro" className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-rodez-red" />
                             </div>
                             <div>
                                 <label className="block text-sm text-gray-400 mb-1">Monto Total</label>
-                                <input type="number" value={debtAmount} onChange={e => setDebtAmount(e.target.value)} placeholder="200000000" className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-sniper-blue" />
+                                <input type="number" value={debtAmount} onChange={e => setDebtAmount(e.target.value)} placeholder="200000000" className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-rodez-red" />
                             </div>
                         </div>
                         <div className="flex justify-end space-x-2 mt-3">
                             <button onClick={() => setShowAddDebt(false)} className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white rounded text-sm">Cancelar</button>
-                            <button onClick={handleAddDebt} className="px-3 py-1.5 bg-sniper-blue hover:bg-blue-600 text-white rounded text-sm">Guardar</button>
+                            <button onClick={handleAddDebt} className="px-3 py-1.5 bg-rodez-red hover:bg-blue-600 text-white rounded text-sm">Guardar</button>
                         </div>
                     </div>
                 )}

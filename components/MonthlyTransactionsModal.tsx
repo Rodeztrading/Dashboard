@@ -130,7 +130,7 @@ export const MonthlyTransactionsModal: React.FC<MonthlyTransactionsModalProps> =
                 <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
                     {loading ? (
                         <div className="flex justify-center py-10">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sniper-blue"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rodez-red"></div>
                         </div>
                     ) : transactions.length > 0 ? (
                         transactions.map((t) => (
@@ -140,7 +140,7 @@ export const MonthlyTransactionsModal: React.FC<MonthlyTransactionsModalProps> =
                                         {t.type === TransactionType.INCOME ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-white group-hover:text-sniper-blue transition-colors">{t.description}</h3>
+                                        <h3 className="font-bold text-white group-hover:text-rodez-red transition-colors">{t.description}</h3>
                                         <div className="flex items-center text-sm text-gray-500 space-x-2">
                                             <span className="flex items-center">
                                                 <Calendar className="w-3 h-3 mr-1" />

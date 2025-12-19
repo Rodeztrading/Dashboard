@@ -221,7 +221,7 @@ export const BudgetView: React.FC<BudgetViewProps> = () => {
                         <h2 className="text-xl font-bold text-white">Cuentas</h2>
                         <button
                             onClick={() => setShowAddAccount(true)}
-                            className="text-sm text-sniper-blue hover:text-blue-400 transition-colors"
+                            className="text-sm text-rodez-red hover:text-blue-400 transition-colors"
                         >
                             + Agregar Cuenta
                         </button>
@@ -233,7 +233,7 @@ export const BudgetView: React.FC<BudgetViewProps> = () => {
                             <p className="text-gray-400">No tienes cuentas registradas</p>
                             <button
                                 onClick={() => setShowAddAccount(true)}
-                                className="mt-4 px-4 py-2 bg-sniper-blue hover:bg-blue-600 text-white rounded-lg transition-colors"
+                                className="mt-4 px-4 py-2 bg-rodez-red hover:bg-blue-600 text-white rounded-lg transition-colors"
                             >
                                 Crear Primera Cuenta
                             </button>
@@ -284,7 +284,7 @@ export const BudgetView: React.FC<BudgetViewProps> = () => {
                         {activeTab === 'ACCOUNTS' && (
                             <button
                                 onClick={() => setShowAddTransaction(true)}
-                                className="px-4 py-2 bg-sniper-blue hover:bg-blue-600 text-white rounded-lg flex items-center justify-center space-x-2 transition-colors w-full md:w-auto"
+                                className="px-4 py-2 bg-rodez-red hover:bg-blue-600 text-white rounded-lg flex items-center justify-center space-x-2 transition-colors w-full md:w-auto"
                                 disabled={accounts.length === 0}
                             >
                                 <Plus className="w-4 h-4" />
@@ -326,7 +326,7 @@ export const BudgetView: React.FC<BudgetViewProps> = () => {
                 <div className="mt-6">
                     {activeTab === 'ACCOUNTS' && renderAccountsTab()}
                     {activeTab === 'CATEGORIES' && <CategoriesView />}
-                    {activeTab === 'BILLS' && <BillsView />}
+                    {activeTab === 'BILLS' && <BillsView accounts={accounts} onRefresh={refreshAccounts} />}
                 </div>
             </div>
 

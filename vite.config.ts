@@ -16,9 +16,9 @@ export default defineConfig(({ mode }) => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
         manifest: {
-          name: 'Sniper Trade Monitor',
-          short_name: 'SniperTrade',
-          description: 'Monitor de trading y finanzas personales',
+          name: 'RODEZ Trade Monitor',
+          short_name: 'RODEZ',
+          description: 'Bitácora de trading profesional RODEZ',
           theme_color: '#0d1117',
           background_color: '#0d1117',
           display: 'standalone',

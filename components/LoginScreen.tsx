@@ -10,14 +10,14 @@ export const LoginScreen: React.FC = () => {
             <div className="max-w-md w-full">
                 {/* Logo and Title */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-sniper-blue rounded-2xl mb-6 shadow-lg shadow-blue-900/50">
-                        <Target className="w-12 h-12 text-white" />
+                    <div className="w-32 h-32 mx-auto mb-6">
+                        <img src="/logo_rodez.png" alt="RODEZ Logo" className="w-full h-full object-contain" />
                     </div>
-                    <h1 className="text-4xl font-bold text-white mb-2">
-                        SNIPER<span className="text-sniper-blue">.PRO</span>
+                    <h1 className="text-4xl font-bold text-white mb-2 tracking-widest text-rodez-red uppercase">
+                        RODEZ
                     </h1>
                     <p className="text-gray-400 text-lg">
-                        Tu plataforma de trading y finanzas personales
+                        Tu Journal de Trading Profesional
                     </p>
                 </div>
 
@@ -86,24 +86,24 @@ export const LoginScreen: React.FC = () => {
                         </p>
                         <div className="space-y-3">
                             <div className="flex items-start space-x-3">
-                                <div className="w-5 h-5 rounded-full bg-sniper-blue/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <div className="w-2 h-2 rounded-full bg-sniper-blue"></div>
+                                <div className="w-5 h-5 rounded-full bg-rodez-red/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <div className="w-2 h-2 rounded-full bg-rodez-red"></div>
                                 </div>
                                 <p className="text-gray-400 text-sm">
                                     Tus datos están seguros y privados
                                 </p>
                             </div>
                             <div className="flex items-start space-x-3">
-                                <div className="w-5 h-5 rounded-full bg-sniper-blue/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <div className="w-2 h-2 rounded-full bg-sniper-blue"></div>
+                                <div className="w-5 h-5 rounded-full bg-rodez-red/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <div className="w-2 h-2 rounded-full bg-rodez-red"></div>
                                 </div>
                                 <p className="text-gray-400 text-sm">
                                     Sincronización automática entre dispositivos
                                 </p>
                             </div>
                             <div className="flex items-start space-x-3">
-                                <div className="w-5 h-5 rounded-full bg-sniper-blue/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <div className="w-2 h-2 rounded-full bg-sniper-blue"></div>
+                                <div className="w-5 h-5 rounded-full bg-rodez-red/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <div className="w-2 h-2 rounded-full bg-rodez-red"></div>
                                 </div>
                                 <p className="text-gray-400 text-sm">
                                     Acceso desde cualquier lugar

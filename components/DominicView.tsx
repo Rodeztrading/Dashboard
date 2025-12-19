@@ -243,13 +243,13 @@ export const DominicView: React.FC = () => {
                                     className={`
                                         min-h-[100px] p-2 border-b border-r border-gray-800 relative cursor-pointer transition-all hover:bg-gray-800/50
                                         ${!isCurrentMonth ? 'opacity-30 bg-gray-950' : ''}
-                                        ${isToday ? 'ring-1 ring-inset ring-sniper-blue' : ''}
+                                        ${isToday ? 'ring-1 ring-inset ring-rodez-red' : ''}
                                     `}
                                 >
                                     <div className="flex justify-between items-start">
                                         <span className={`
                                             text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full
-                                            ${isToday ? 'bg-sniper-blue text-white' : 'text-gray-400'}
+                                            ${isToday ? 'bg-rodez-red text-white' : 'text-gray-400'}
                                         `}>
                                             {date.getDate()}
                                         </span>

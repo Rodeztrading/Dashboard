@@ -133,7 +133,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accoun
                                 onChange={(e) => setAmount(e.target.value)}
                                 placeholder="0.00"
                                 step="0.01"
-                                className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-8 pr-4 py-3 text-white focus:ring-2 focus:ring-sniper-blue focus:border-transparent outline-none transition-all text-lg font-bold"
+                                className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-8 pr-4 py-3 text-white focus:ring-2 focus:ring-rodez-red focus:border-transparent outline-none transition-all text-lg font-bold"
                                 required
                             />
                         </div>
@@ -147,7 +147,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accoun
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder={type === TransactionType.INCOME ? "Ej. Salario" : "Ej. Supermercado"}
-                            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-sniper-blue focus:border-transparent outline-none transition-all"
+                            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-rodez-red focus:border-transparent outline-none transition-all"
                             required
                         />
                     </div>
@@ -163,7 +163,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accoun
                                         setSelectedCategoryId(e.target.value);
                                         setSelectedSubcategoryId('');
                                     }}
-                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-sniper-blue focus:border-transparent outline-none transition-all"
+                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-rodez-red focus:border-transparent outline-none transition-all"
                                 >
                                     <option value="">Sin categoría</option>
                                     {availableCategories.map((cat) => (
@@ -177,7 +177,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accoun
                                 <select
                                     value={selectedSubcategoryId}
                                     onChange={(e) => setSelectedSubcategoryId(e.target.value)}
-                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-sniper-blue focus:border-transparent outline-none transition-all"
+                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-rodez-red focus:border-transparent outline-none transition-all"
                                     disabled={!selectedCategoryId || !selectedCategory?.subcategories?.length}
                                 >
                                     <option value="">Opcional</option>
@@ -198,7 +198,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accoun
                                     id="isPending"
                                     checked={isPending}
                                     onChange={(e) => setIsPending(e.target.checked)}
-                                    className="w-5 h-5 rounded border-gray-600 text-sniper-blue focus:ring-sniper-blue bg-gray-700"
+                                    className="w-5 h-5 rounded border-gray-600 text-rodez-red focus:ring-rodez-red bg-gray-700"
                                 />
                                 <label htmlFor="isPending" className="text-sm font-medium text-white flex items-center cursor-pointer">
                                     <AlertCircle className="w-4 h-4 mr-2 text-yellow-500" />
@@ -213,7 +213,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accoun
                                         type="date"
                                         value={dueDate}
                                         onChange={(e) => setDueDate(e.target.value)}
-                                        className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-sniper-blue"
+                                        className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-rodez-red"
                                         required={isPending}
                                     />
                                 </div>
@@ -230,7 +230,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accoun
                             <select
                                 value={accountId}
                                 onChange={(e) => setAccountId(e.target.value)}
-                                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-sniper-blue focus:border-transparent outline-none transition-all"
+                                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-rodez-red focus:border-transparent outline-none transition-all"
                                 required
                             >
                                 {accounts.map((acc) => (
@@ -245,7 +245,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accoun
                                 <select
                                     value={toAccountId}
                                     onChange={(e) => setToAccountId(e.target.value)}
-                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-sniper-blue focus:border-transparent outline-none transition-all"
+                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-rodez-red focus:border-transparent outline-none transition-all"
                                     required
                                 >
                                     {accounts.filter(a => a.id !== accountId).map((acc) => (
@@ -263,7 +263,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accoun
                             type="date"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
-                            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-sniper-blue focus:border-transparent outline-none transition-all"
+                            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-rodez-red focus:border-transparent outline-none transition-all"
                             required
                         />
                     </div>
