@@ -6,7 +6,7 @@ import { LoadingScreen } from './components/LoadingScreen';
 import { DominicView } from './components/DominicView';
 import { ViewState, VisualTrade } from './types';
 import { LayoutDashboard, Target, Settings, BarChart2, Wallet, LogOut, User, Download, Smartphone, Share, Users } from 'lucide-react';
-import { getAllTrades, saveTrade, migrateLocalTradesToFirebase, migrateLegacyGlobalTrades, resetUserData } from './services/firebaseService';
+import { getAllTrades, saveTrade, migrateLocalTradesToFirebase, migrateLegacyGlobalTrades, resetUserData, uploadTradeImageFromBase64 } from './services/firebaseService';
 import { useAuth } from './hooks/useAuth';
 import { usePWAInstall } from './hooks/usePWAInstall';
 
@@ -19,10 +19,12 @@ const App: React.FC = () => {
 
   const loadTrades = async () => {
     if (!user) {
+      console.log('[App] No user logged in, skipping loadTrades');
       setLoading(false);
       return;
     }
 
+    console.log('[App] Loading trades for user:', user.email, 'UID:', user.uid);
     try {
       // 1. Migrate localStorage trades if they exist (only once)
       const savedTrades = localStorage.getItem('jf_rodez_trades');
@@ -69,10 +71,27 @@ const App: React.FC = () => {
   const handleSaveTrade = async (tradeData: Omit<VisualTrade, 'id' | 'createdAt'>) => {
     if (!user) return;
     try {
+      const tradeId = crypto.randomUUID();
+      let imageUrl = '';
+
+      // Upload image if it's base64 and not already a URL
+      if (tradeData.tradeImage.base64) {
+        imageUrl = await uploadTradeImageFromBase64(
+          tradeData.tradeImage.base64,
+          tradeData.tradeImage.mimeType,
+          tradeId
+        );
+      }
+
       const newTrade: VisualTrade = {
         ...tradeData,
-        id: crypto.randomUUID(),
+        id: tradeId,
         createdAt: Date.now(),
+        tradeImage: {
+          ...tradeData.tradeImage,
+          url: imageUrl,
+          base64: undefined, // Remove base64 to save space in Firestore
+        }
       };
 
       // Save to Firebase

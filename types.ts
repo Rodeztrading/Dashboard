@@ -1,8 +1,9 @@
 export interface VisualTrade {
   id: string;
   tradeImage: {
-    base64: string;
+    base64?: string;
     mimeType: string;
+    url?: string;
   };
   userAction: 'CALL' | 'PUT';
   outcome: 'WIN' | 'LOSS';
@@ -11,8 +12,9 @@ export interface VisualTrade {
   createdAt: number; // Timestamp
   // Optional result image for losses or specific confirmations
   resultImage?: {
-    base64: string;
+    base64?: string;
     mimeType: string;
+    url?: string;
   };
 }
 

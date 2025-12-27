@@ -21,7 +21,7 @@ export const DominicView: React.FC = () => {
         if (!user) return;
         try {
             setLoading(true);
-            const data = await getCustodyOverrides();
+            const data = await getCustodyOverrides(user.uid);
             const overridesMap: Record<string, CustodyOverride> = {};
             data.forEach(o => {
                 overridesMap[o.date] = o;
@@ -124,7 +124,7 @@ export const DominicView: React.FC = () => {
             setOverrides(newOverrides);
 
             try {
-                await saveCustodyOverride(override);
+                await saveCustodyOverride(override, user.uid);
             } catch (error) {
                 console.error('Failed to save override', error);
                 setOverrides(overrides);
@@ -142,7 +142,7 @@ export const DominicView: React.FC = () => {
             setOverrides(newOverrides);
 
             try {
-                await saveCustodyOverride(override);
+                await saveCustodyOverride(override, user.uid);
             } catch (error) {
                 console.error('Failed to save override', error);
                 setOverrides(overrides);
@@ -162,7 +162,7 @@ export const DominicView: React.FC = () => {
         setOverrides(newOverrides);
 
         try {
-            await deleteCustodyOverride(dateString);
+            await deleteCustodyOverride(dateString, user.uid);
         } catch (error) {
             console.error('Failed to delete override', error);
             setOverrides(overrides);

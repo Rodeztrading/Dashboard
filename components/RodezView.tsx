@@ -210,7 +210,7 @@ export const RodezView: React.FC<RodezViewProps> = ({ trades, onSaveTrade }) => 
                       onClick={() => setViewTrade(trade)}
                     >
                       <img
-                        src={`data:${trade.tradeImage.mimeType};base64,${trade.tradeImage.base64}`}
+                        src={trade.tradeImage.url || `data:${trade.tradeImage.mimeType};base64,${trade.tradeImage.base64}`}
                         alt="Trade"
                         className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
                       />
@@ -306,7 +306,7 @@ export const RodezView: React.FC<RodezViewProps> = ({ trades, onSaveTrade }) => 
             onClick={e => e.stopPropagation()}
           >
             <img
-              src={`data:${viewTrade.tradeImage.mimeType};base64,${viewTrade.tradeImage.base64}`}
+              src={viewTrade.tradeImage.url || `data:${viewTrade.tradeImage.mimeType};base64,${viewTrade.tradeImage.base64}`}
               alt="Full View"
               className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl border border-gray-800 bg-black"
             />

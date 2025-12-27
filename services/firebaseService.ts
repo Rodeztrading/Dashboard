@@ -21,6 +21,41 @@ import { db, storage, auth } from '../config/firebase';
 import { VisualTrade, CustodyOverride } from '../types';
 
 /**
+ * Upload an image from base64 to Firebase Storage
+ * @param base64 - Base64 string of the image
+ * @param mimeType - Mime type of the image
+ * @param tradeId - Trade ID to associate with the image
+ * @returns Download URL of the uploaded image
+ */
+export const uploadTradeImageFromBase64 = async (base64: string, mimeType: string, tradeId: string): Promise<string> => {
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error('User not authenticated');
+
+        const timestamp = Date.now();
+        const fileName = `users/${user.uid}/trades/${tradeId}/${timestamp}_image`;
+        const storageRef = ref(storage, fileName);
+
+        // Convert base64 to Blob
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: mimeType });
+
+        await uploadBytes(storageRef, blob);
+        const downloadURL = await getDownloadURL(storageRef);
+
+        return downloadURL;
+    } catch (error) {
+        console.error('Error uploading base64 image:', error);
+        throw new Error('Failed to upload image from base64');
+    }
+};
+
+/**
  * Upload an image to Firebase Storage
  * @param file - Image file to upload
  * @param tradeId - Trade ID to associate with the image
@@ -263,7 +298,7 @@ export const resetUserData = async (userId: string): Promise<void> => {
  * @param override - Override data
  * @param userId - ID of the user
  */
-export const saveCustodyOverride = async (override: Omit<CustodyOverride, 'id' | 'createdAt'>): Promise<CustodyOverride> => {
+export const saveCustodyOverride = async (override: Omit<CustodyOverride, 'id' | 'createdAt'>, userId: string): Promise<CustodyOverride> => {
     try {
         const overrideData = {
             ...override,
@@ -271,7 +306,7 @@ export const saveCustodyOverride = async (override: Omit<CustodyOverride, 'id' |
         };
 
         // Use date as ID to ensure one override per day
-        const docRef = doc(db, 'custody_overrides', override.date);
+        const docRef = doc(db, `users/${userId}/custody_overrides`, override.date);
         await setDoc(docRef, overrideData);
 
         return {
@@ -288,9 +323,9 @@ export const saveCustodyOverride = async (override: Omit<CustodyOverride, 'id' |
  * Get all custody overrides for a user
  * @param userId - ID of the user
  */
-export const getCustodyOverrides = async (): Promise<CustodyOverride[]> => {
+export const getCustodyOverrides = async (userId: string): Promise<CustodyOverride[]> => {
     try {
-        const q = query(collection(db, 'custody_overrides'));
+        const q = query(collection(db, `users/${userId}/custody_overrides`));
         const querySnapshot = await getDocs(q);
         return querySnapshot.docs.map(doc => ({
             ...doc.data(),
@@ -307,9 +342,9 @@ export const getCustodyOverrides = async (): Promise<CustodyOverride[]> => {
  * @param date - Date of the override (YYYY-MM-DD)
  * @param userId - ID of the user
  */
-export const deleteCustodyOverride = async (date: string): Promise<void> => {
+export const deleteCustodyOverride = async (date: string, userId: string): Promise<void> => {
     try {
-        const docRef = doc(db, 'custody_overrides', date);
+        const docRef = doc(db, `users/${userId}/custody_overrides`, date);
         await deleteDoc(docRef);
     } catch (error) {
         console.error('Error deleting custody override:', error);
