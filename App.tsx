@@ -7,6 +7,7 @@ import { DominicView } from './components/DominicView';
 import { ViewState, VisualTrade } from './types';
 import { LayoutDashboard, Target, Settings, BarChart2, Wallet, LogOut, User, Download, Smartphone, Share, Users } from 'lucide-react';
 import { getAllTrades, saveTrade, migrateLocalTradesToFirebase, migrateLegacyGlobalTrades, resetUserData, uploadTradeImageFromBase64 } from './services/firebaseService';
+import { resetBudgetData } from './services/budgetService';
 import { useAuth } from './hooks/useAuth';
 import { usePWAInstall } from './hooks/usePWAInstall';
 
@@ -16,6 +17,7 @@ const App: React.FC = () => {
   const [view, setView] = useState<ViewState>(ViewState.SNIPER); // ViewState.SNIPER will remain the enum value for logic consistency unless I change the enum too, but for UI it will be RODEZ
   const [trades, setTrades] = useState<VisualTrade[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showBudgetResetConfirm, setShowBudgetResetConfirm] = useState(false);
 
   const loadTrades = async () => {
     if (!user) {
@@ -285,6 +287,75 @@ const App: React.FC = () => {
                 Estas acciones son destructivas y no se pueden deshacer.
               </p>
 
+              {/* Budget Reset Button */}
+              {/* Budget Reset Button */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowBudgetResetConfirm(true);
+                }}
+                className="w-full sm:w-auto px-4 py-2 mb-3 bg-orange-900/20 text-orange-400 rounded hover:bg-orange-900/40 border border-orange-900/50 transition-colors text-sm flex items-center justify-center"
+              >
+                <Wallet className="w-4 h-4 mr-2" />
+                Reiniciar Datos de Presupuesto
+              </button>
+
+              {/* Custom Budget Reset Confirmation Modal */}
+              {showBudgetResetConfirm && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+                  <div className="bg-gray-900 border border-gray-800 rounded-xl max-w-md w-full p-6 shadow-2xl">
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                      <Wallet className="w-6 h-6 mr-2 text-orange-500" />
+                      ¿Borrar datos de Presupuesto?
+                    </h3>
+                    <div className="space-y-4 text-gray-300 text-sm mb-6">
+                      <p>Estás a punto de eliminar permanentemente:</p>
+                      <ul className="list-disc pl-5 space-y-1 text-orange-400">
+                        <li>Cuentas y saldos</li>
+                        <li>Todas las transacciones</li>
+                        <li>Categorías personalizadas</li>
+                        <li>Deudas recurrentes</li>
+                      </ul>
+                      <p className="font-medium text-white">Esta acción NO afectará tus Trades ni el calendario de Dominic.</p>
+                      <p className="bg-red-900/20 border border-red-900/50 p-3 rounded text-red-400">
+                        Esta acción no se puede deshacer.
+                      </p>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setShowBudgetResetConfirm(false)}
+                        className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded transition-colors"
+                        disabled={loading}
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        onClick={async () => {
+                          try {
+                            setLoading(true);
+                            await resetBudgetData(user.uid);
+                            alert("Datos eliminados correctamente. Recargando...");
+                            window.location.reload();
+                          } catch (error) {
+                            console.error("Error resetting budget:", error);
+                            alert("Hubo un error al eliminar los datos.");
+                            setLoading(false);
+                            setShowBudgetResetConfirm(false);
+                          }
+                        }}
+                        className="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded transition-colors flex items-center justify-center"
+                        disabled={loading}
+                      >
+                        {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Confirmar Eliminación'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Full Account Reset Button */}
               <button
                 onClick={async () => {
                   if (confirm("ADVERTENCIA: ¿Estás seguro de que quieres borrar TODOS tus datos? Esta acción eliminará permanentemente todos tus trades, cuentas y configuraciones de la nube y no se puede deshacer.")) {

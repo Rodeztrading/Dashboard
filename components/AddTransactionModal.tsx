@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, TrendingUp, TrendingDown, ArrowRightLeft, Calendar, AlertCircle } from 'lucide-react';
-import { TransactionType, Transaction, Account, Category } from '../types';
+import { TransactionType, Transaction, Account, Category, BudgetBucket } from '../types';
 import { getCategories } from '../services/budgetService';
 import { useAuth } from '../hooks/useAuth';
 
@@ -8,9 +8,10 @@ interface AddTransactionModalProps {
     accounts: Account[];
     onClose: () => void;
     onSave: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => Promise<void>;
+    existingInvestments?: string[];
 }
 
-export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accounts, onClose, onSave }) => {
+export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accounts, onClose, onSave, existingInvestments = [] }) => {
     const { user } = useAuth();
     const [type, setType] = useState<TransactionType>(TransactionType.EXPENSE);
     const [amount, setAmount] = useState('');
@@ -28,6 +29,12 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accoun
     // Pending Bills State
     const [isPending, setIsPending] = useState(false);
     const [dueDate, setDueDate] = useState('');
+    const [bucketId, setBucketId] = useState<BudgetBucket>(BudgetBucket.ESSENTIAL);
+
+    // Investment/Asset Tracking State
+    const [isInvestmentReturn, setIsInvestmentReturn] = useState(false);
+    const [investmentName, setInvestmentName] = useState('');
+    const [isNewInvestment, setIsNewInvestment] = useState(false);
 
     const [loading, setLoading] = useState(false);
 
@@ -72,7 +79,10 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accoun
                 categoryName: selectedCategory?.name, // For legacy/display support
                 isPending: type === TransactionType.EXPENSE ? isPending : false,
                 dueDate: isPending && dueDate ? new Date(dueDate).getTime() : undefined,
-                isPaid: false
+                isPaid: false,
+                bucketId: type === TransactionType.EXPENSE ? bucketId : (isInvestmentReturn ? BudgetBucket.INVESTMENT : undefined),
+                investmentName: investmentName.trim() || undefined,
+                isInvestmentReturn: type === TransactionType.INCOME ? isInvestmentReturn : false
             };
 
             await onSave(transactionData);
@@ -152,6 +162,68 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accoun
                         />
                     </div>
 
+                    {/* Investment Return Checkbox (Only for Income) */}
+                    {type === TransactionType.INCOME && (
+                        <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                            <div className="flex items-center space-x-3">
+                                <input
+                                    type="checkbox"
+                                    id="isReturn"
+                                    checked={isInvestmentReturn}
+                                    onChange={(e) => setIsInvestmentReturn(e.target.checked)}
+                                    className="w-5 h-5 rounded border-gray-600 text-green-500 focus:ring-green-500 bg-gray-700"
+                                />
+                                <label htmlFor="isReturn" className="text-sm font-medium text-white flex items-center cursor-pointer">
+                                    <TrendingUp className="w-4 h-4 mr-2 text-green-400" />
+                                    Es Retorno de Inversión
+                                </label>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Investment Name (For returns OR Investment bucket) */}
+                    {(isInvestmentReturn || (type === TransactionType.EXPENSE && bucketId === BudgetBucket.INVESTMENT)) && (
+                        <div className="animate-in fade-in slide-in-from-top-2 duration-200 space-y-3">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-2">Seleccionar Inversión / Activo</label>
+                                <select
+                                    value={isNewInvestment ? 'NEW' : investmentName}
+                                    onChange={(e) => {
+                                        if (e.target.value === 'NEW') {
+                                            setIsNewInvestment(true);
+                                            setInvestmentName('');
+                                        } else {
+                                            setIsNewInvestment(false);
+                                            setInvestmentName(e.target.value);
+                                        }
+                                    }}
+                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-rodez-red focus:border-transparent outline-none transition-all"
+                                    required
+                                >
+                                    <option value="" disabled>Selecciona una opción</option>
+                                    <option value="NEW">+ Nueva Inversión...</option>
+                                    {existingInvestments.map(inv => (
+                                        <option key={inv} value={inv}>{inv}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {isNewInvestment && (
+                                <div className="animate-in slide-in-from-left-2 duration-200">
+                                    <label className="block text-xs font-medium text-rodez-red uppercase tracking-wider mb-2">Nombre de la Nueva Inversión</label>
+                                    <input
+                                        type="text"
+                                        value={investmentName}
+                                        onChange={(e) => setInvestmentName(e.target.value)}
+                                        placeholder="Ej: Trading, Apartamento, Bitcoin"
+                                        className="w-full bg-gray-800 border-2 border-rodez-red/30 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-rodez-red focus:border-transparent outline-none transition-all"
+                                        required
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {/* Category Selection (Not for Transfer) */}
                     {type !== TransactionType.TRANSFER && (
                         <div className="grid grid-cols-2 gap-4">
@@ -185,6 +257,33 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ accoun
                                         <option key={sub.id} value={sub.id}>{sub.name}</option>
                                     ))}
                                 </select>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Bucket Selection (Only for Expense) */}
+                    {type === TransactionType.EXPENSE && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-400 mb-2">Distribución (Cubeta)</label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {[
+                                    { id: BudgetBucket.ESSENTIAL, label: 'Esencial (50%)' },
+                                    { id: BudgetBucket.INVESTMENT, label: 'Inversión (25%)' },
+                                    { id: BudgetBucket.STABILITY, label: 'Estabilidad (15%)' },
+                                    { id: BudgetBucket.REWARDS, label: 'Recompensas (10%)' },
+                                ].map((b) => (
+                                    <button
+                                        key={b.id}
+                                        type="button"
+                                        onClick={() => setBucketId(b.id)}
+                                        className={`px-3 py-2 rounded-lg border text-xs font-medium transition-all ${bucketId === b.id
+                                            ? 'bg-rodez-red border-rodez-red text-white'
+                                            : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-gray-600'
+                                            }`}
+                                    >
+                                        {b.label}
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     )}

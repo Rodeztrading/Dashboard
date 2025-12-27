@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Save, RefreshCw } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { CustodyOverride, CustodyDay } from '../types';
-import { saveCustodyOverride, getCustodyOverrides, deleteCustodyOverride } from '../services/firebaseService';
+import { saveCustodyOverride, subscribeToCustodyOverrides, deleteCustodyOverride } from '../services/firebaseService';
 
 export const DominicView: React.FC = () => {
     const { user } = useAuth();
@@ -10,29 +10,30 @@ export const DominicView: React.FC = () => {
     const [overrides, setOverrides] = useState<Record<string, CustodyOverride>>({});
     const [loading, setLoading] = useState(true);
 
-    // Load overrides
-    useEffect(() => {
-        if (user) {
-            loadOverrides();
-        }
-    }, [user]);
+    // Helper to get consistent date keys (YYYY-MM-DD) without timezone shifts
+    const formatDateKey = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
 
-    const loadOverrides = async () => {
+    // Load overrides with real-time subscription
+    useEffect(() => {
         if (!user) return;
-        try {
-            setLoading(true);
-            const data = await getCustodyOverrides(user.uid);
+
+        setLoading(true);
+        const unsubscribe = subscribeToCustodyOverrides((data) => {
             const overridesMap: Record<string, CustodyOverride> = {};
             data.forEach(o => {
                 overridesMap[o.date] = o;
             });
             setOverrides(overridesMap);
-        } catch (error) {
-            console.error('Error loading overrides:', error);
-        } finally {
             setLoading(false);
-        }
-    };
+        });
+
+        return () => unsubscribe();
+    }, [user]);
 
     const getDaysInMonth = (date: Date) => {
         const year = date.getFullYear();
@@ -66,7 +67,7 @@ export const DominicView: React.FC = () => {
     };
 
     const getResponsible = (date: Date): { responsible: 'MOM' | 'DAD', isOverride: boolean, originalResponsible?: 'MOM' | 'DAD' } => {
-        const dateString = date.toISOString().split('T')[0];
+        const dateString = formatDateKey(date);
 
         // Check override
         if (overrides[dateString]) {
@@ -83,32 +84,30 @@ export const DominicView: React.FC = () => {
         epoch.setHours(0, 0, 0, 0);
 
         const diffTime = d.getTime() - epoch.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        // Use Math.round to handle DST changes (23 or 25 hour days)
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
-        // Pattern: 2 days Mom, 2 days Dad
+        // Pattern: 2 days Dad, 2 days Mom
         // Cycle length: 4
-        // 0, 1: Mom
-        // 2, 3: Dad
-        // Handle negative diffs correctly
+        // 0, 1: Dad (Jan 1, Jan 2)
+        // 2, 3: Mom (Jan 3, Jan 4)
         const mod = ((diffDays % 4) + 4) % 4;
 
         return {
             responsible: mod < 2 ? 'DAD' : 'MOM',
             isOverride: false,
-            // No originalResponsible when there is no override
         };
-
     };
 
     const handleDayClick = async (date: Date) => {
         if (!user) return;
 
-        const dateString = date.toISOString().split('T')[0];
+        const dateString = formatDateKey(date);
         const current = getResponsible(date);
         const newResponsible = current.responsible === 'MOM' ? 'DAD' : 'MOM';
 
-        // Optimistic update
-        const newOverrides = { ...overrides };
+        // Note: Real-time update will handle the state, but we can do an optimistic local update if desired.
+        // For simplicity and to avoid flickering if the subscription is fast, we rely on Firebase.
 
         if (current.isOverride) {
             // Existing override: keep originalResponsible unchanged
@@ -120,14 +119,11 @@ export const DominicView: React.FC = () => {
                 originalResponsible: existing.originalResponsible,
                 createdAt: Date.now()
             };
-            newOverrides[dateString] = override;
-            setOverrides(newOverrides);
 
             try {
-                await saveCustodyOverride(override, user.uid);
+                await saveCustodyOverride(override);
             } catch (error) {
                 console.error('Failed to save override', error);
-                setOverrides(overrides);
             }
         } else {
             // Create new override, store the original responsible
@@ -138,14 +134,11 @@ export const DominicView: React.FC = () => {
                 originalResponsible: current.responsible,
                 createdAt: Date.now()
             };
-            newOverrides[dateString] = override;
-            setOverrides(newOverrides);
 
             try {
-                await saveCustodyOverride(override, user.uid);
+                await saveCustodyOverride(override);
             } catch (error) {
                 console.error('Failed to save override', error);
-                setOverrides(overrides);
             }
         }
     };
@@ -154,18 +147,13 @@ export const DominicView: React.FC = () => {
         e.stopPropagation();
         if (!user) return;
 
-        const dateString = date.toISOString().split('T')[0];
+        const dateString = formatDateKey(date);
         if (!overrides[dateString]) return;
 
-        const newOverrides = { ...overrides };
-        delete newOverrides[dateString];
-        setOverrides(newOverrides);
-
         try {
-            await deleteCustodyOverride(dateString, user.uid);
+            await deleteCustodyOverride(dateString);
         } catch (error) {
             console.error('Failed to delete override', error);
-            setOverrides(overrides);
         }
     };
 

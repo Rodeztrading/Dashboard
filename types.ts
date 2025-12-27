@@ -104,6 +104,14 @@ export interface Category {
   isDefault?: boolean;
 }
 
+export enum BudgetBucket {
+  ESSENTIAL = 'ESSENTIAL',
+  INVESTMENT = 'INVESTMENT',
+  STABILITY = 'STABILITY',
+  REWARDS = 'REWARDS',
+  OTHER = 'OTHER'
+}
+
 export interface Transaction {
   id: string;
   type: TransactionType;
@@ -120,6 +128,9 @@ export interface Transaction {
   dueDate?: number; // Fecha de vencimiento para facturas
   isPaid?: boolean; // Si ya fue pagada
   recurringDebtId?: string; // ID de la deuda recurrente asociada
+  bucketId?: BudgetBucket; // Cubeta asignada (50/25/15/10)
+  investmentName?: string; // Nombre del activo/inversión (ej. "Trading", "Apartamento")
+  isInvestmentReturn?: boolean; // Si es un ingreso por retorno de inversión
 }
 
 export interface RecurringDebt {
@@ -157,6 +168,7 @@ export interface FinancialSummary {
     amount: number;
     percentage: number;
   }[];
+  bucketBalances?: Record<BudgetBucket, number>; // Saldo acumulado por cubeta
 }
 
 // ============================================

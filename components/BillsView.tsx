@@ -159,8 +159,8 @@ export const BillsView: React.FC<BillsViewProps> = ({ accounts, onRefresh }) => 
                                 <div className="flex-1">
                                     <h3 className="font-medium text-white">{bill.description}</h3>
                                     <div className="flex items-center space-x-4 mt-1 text-sm text-gray-400">
-                                        {bill.dueDate && (
-                                            <span className="flex items-center"><Calendar className="w-4 h-4 mr-1" /> {new Date(bill.dueDate).toLocaleDateString()}</span>
+                                        {bill.date && (
+                                            <span className="flex items-center"><Calendar className="w-4 h-4 mr-1" /> {new Date(typeof bill.date === 'object' ? (bill.date as any).toMillis() : bill.date).toLocaleDateString()}</span>
                                         )}
                                         {bill.categoryName && (
                                             <span className="px-2 py-0.5 bg-gray-700 rounded text-xs">{bill.categoryName}</span>

@@ -9,7 +9,8 @@ import {
     orderBy,
     Timestamp,
     writeBatch,
-    setDoc
+    setDoc,
+    onSnapshot
 } from 'firebase/firestore';
 import {
     ref,
@@ -294,11 +295,10 @@ export const resetUserData = async (userId: string): Promise<void> => {
 };
 
 /**
- * Save a custody override to Firestore
+ * Save a custody override to Firestore (Shared collection)
  * @param override - Override data
- * @param userId - ID of the user
  */
-export const saveCustodyOverride = async (override: Omit<CustodyOverride, 'id' | 'createdAt'>, userId: string): Promise<CustodyOverride> => {
+export const saveCustodyOverride = async (override: Omit<CustodyOverride, 'id' | 'createdAt'>): Promise<CustodyOverride> => {
     try {
         const overrideData = {
             ...override,
@@ -306,7 +306,7 @@ export const saveCustodyOverride = async (override: Omit<CustodyOverride, 'id' |
         };
 
         // Use date as ID to ensure one override per day
-        const docRef = doc(db, `users/${userId}/custody_overrides`, override.date);
+        const docRef = doc(db, 'custody_overrides', override.date);
         await setDoc(docRef, overrideData);
 
         return {
@@ -320,12 +320,11 @@ export const saveCustodyOverride = async (override: Omit<CustodyOverride, 'id' |
 };
 
 /**
- * Get all custody overrides for a user
- * @param userId - ID of the user
+ * Get all custody overrides (Shared collection)
  */
-export const getCustodyOverrides = async (userId: string): Promise<CustodyOverride[]> => {
+export const getCustodyOverrides = async (): Promise<CustodyOverride[]> => {
     try {
-        const q = query(collection(db, `users/${userId}/custody_overrides`));
+        const q = query(collection(db, 'custody_overrides'));
         const querySnapshot = await getDocs(q);
         return querySnapshot.docs.map(doc => ({
             ...doc.data(),
@@ -338,13 +337,29 @@ export const getCustodyOverrides = async (userId: string): Promise<CustodyOverri
 };
 
 /**
- * Delete a custody override
- * @param date - Date of the override (YYYY-MM-DD)
- * @param userId - ID of the user
+ * Subscribe to custody overrides in real-time
+ * @param callback - Function to call with updated overrides
  */
-export const deleteCustodyOverride = async (date: string, userId: string): Promise<void> => {
+export const subscribeToCustodyOverrides = (callback: (overrides: CustodyOverride[]) => void) => {
+    const q = query(collection(db, 'custody_overrides'));
+    return onSnapshot(q, (snapshot) => {
+        const overrides = snapshot.docs.map(doc => ({
+            ...doc.data(),
+            id: doc.id
+        } as CustodyOverride));
+        callback(overrides);
+    }, (error) => {
+        console.error('Error subscribing to custody overrides:', error);
+    });
+};
+
+/**
+ * Delete a custody override (Shared collection)
+ * @param date - Date of the override (YYYY-MM-DD)
+ */
+export const deleteCustodyOverride = async (date: string): Promise<void> => {
     try {
-        const docRef = doc(db, `users/${userId}/custody_overrides`, date);
+        const docRef = doc(db, 'custody_overrides', date);
         await deleteDoc(docRef);
     } catch (error) {
         console.error('Error deleting custody override:', error);

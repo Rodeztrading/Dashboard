@@ -21,7 +21,8 @@ import {
     Category,
     Subcategory,
     ExpenseCategory,
-    RecurringDebt
+    RecurringDebt,
+    BudgetBucket
 } from '../types';
 
 // ============================================
@@ -253,8 +254,29 @@ export const createTransaction = async (
         if (transaction.categoryName) cleanTransaction.categoryName = transaction.categoryName;
         if (transaction.isPending !== undefined) cleanTransaction.isPending = transaction.isPending;
         if (transaction.dueDate) cleanTransaction.dueDate = Timestamp.fromMillis(transaction.dueDate);
+        if (transaction.bucketId) cleanTransaction.bucketId = transaction.bucketId;
+        if (transaction.investmentName) cleanTransaction.investmentName = transaction.investmentName;
+        if (transaction.isInvestmentReturn !== undefined) cleanTransaction.isInvestmentReturn = transaction.isInvestmentReturn;
 
         const docRef = await addDoc(collection(db, `users/${userId}/transactions`), cleanTransaction);
+
+        // EXTRA LOGIC for 50/25/15/10 Strategy
+        // If it's an expense from the STABILITY bucket, create a pending debt/bill automatically
+        if (transaction.type === TransactionType.EXPENSE && transaction.bucketId === BudgetBucket.STABILITY && !transaction.isPending) {
+            const debtTransaction: any = {
+                type: TransactionType.EXPENSE,
+                amount: transaction.amount,
+                description: `Reponer: ${transaction.description}`,
+                accountId: transaction.accountId,
+                date: Timestamp.fromMillis(transaction.date),
+                isPaid: false,
+                isPending: true,
+                dueDate: Timestamp.fromMillis(transaction.date + (30 * 24 * 60 * 60 * 1000)), // 30 days later
+                categoryName: 'Deuda a Fondo de Estabilidad',
+                createdAt: Timestamp.fromMillis(Date.now()),
+            };
+            await addDoc(collection(db, `users/${userId}/transactions`), debtTransaction);
+        }
 
         // Update account balance ONLY if it's not a pending bill or if it is paid
         if (!transaction.isPending || transaction.isPaid) {
@@ -348,20 +370,20 @@ export const getAllTransactions = async (userId: string): Promise<Transaction[]>
 
 export const getTransactionsByMonth = async (month: string, userId: string): Promise<Transaction[]> => {
     try {
-        const [year, monthNum] = month.split('-');
-        const startDate = new Date(parseInt(year), parseInt(monthNum) - 1, 1);
-        const endDate = new Date(parseInt(year), parseInt(monthNum), 0, 23, 59, 59);
+        const [year, mon] = month.split('-').map(Number);
+        const startDate = new Date(year, mon - 1, 1);
+        const endDate = new Date(year, mon, 0, 23, 59, 59);
 
+        const transactionsRef = collection(db, `users/${userId}/transactions`);
         const q = query(
-            collection(db, `users/${userId}/transactions`),
+            transactionsRef,
             where('date', '>=', Timestamp.fromDate(startDate)),
             where('date', '<=', Timestamp.fromDate(endDate)),
             orderBy('date', 'desc')
         );
 
         const querySnapshot = await getDocs(q);
-
-        const transactions: Transaction[] = querySnapshot.docs.map(doc => {
+        return querySnapshot.docs.map(doc => {
             const data = doc.data();
             return {
                 ...data,
@@ -370,11 +392,34 @@ export const getTransactionsByMonth = async (month: string, userId: string): Pro
                 createdAt: data.createdAt.toMillis(),
             } as Transaction;
         });
-
-        return transactions;
     } catch (error) {
         console.error('Error getting transactions by month:', error);
         throw new Error('Failed to get transactions by month');
+    }
+};
+
+export const getTransactionsByRange = async (userId: string, endDate: Date): Promise<Transaction[]> => {
+    try {
+        const transactionsRef = collection(db, `users/${userId}/transactions`);
+        const q = query(
+            transactionsRef,
+            where('date', '<=', Timestamp.fromDate(endDate)),
+            orderBy('date', 'desc')
+        );
+
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                ...data,
+                id: doc.id,
+                date: data.date.toMillis(),
+                createdAt: data.createdAt.toMillis(),
+            } as Transaction;
+        });
+    } catch (error) {
+        console.error('Error getting transactions by range:', error);
+        throw new Error('Failed to get transactions by range');
     }
 };
 
@@ -398,26 +443,77 @@ export const getFinancialSummary = async (userId: string, month?: string): Promi
         const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
 
         const currentMonth = month || new Date().toISOString().slice(0, 7);
-        const transactions = await getTransactionsByMonth(currentMonth, userId);
+        const [year, mon] = currentMonth.split('-').map(Number);
+        const targetMonthDate = new Date(year, mon - 1, 1);
+        const endOfTargetMonth = new Date(year, mon, 0, 23, 59, 59);
 
-        // Filter out pending bills from calculations, unless they are paid
-        const activeTransactions = transactions.filter(t => !t.isPending || t.isPaid);
+        // Fetch ALL transactions up to end of selected month for cumulative balances
+        const allTransactions = await getTransactionsByRange(userId, endOfTargetMonth);
 
-        const monthlyIncome = activeTransactions
+        // Month specific transactions for monthly stats
+        const monthlyTransactions = allTransactions.filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getFullYear() === year && tDate.getMonth() === (mon - 1);
+        });
+
+        // Current month active stats (excluding pending)
+        const activeMonthly = monthlyTransactions.filter(t => !t.isPending || t.isPaid);
+
+        const monthlyIncome = activeMonthly
             .filter(t => t.type === TransactionType.INCOME)
             .reduce((sum, t) => sum + t.amount, 0);
 
-        const monthlyExpenses = activeTransactions
+        const monthlyExpenses = activeMonthly
             .filter(t => t.type === TransactionType.EXPENSE)
             .reduce((sum, t) => sum + t.amount, 0);
 
-        const monthlySavings = monthlyIncome - monthlyExpenses;
-        const netBalance = monthlySavings;
+        const netBalance = monthlyIncome - monthlyExpenses;
 
-        // Calculate pending bills
-        const pendingBillsAmount = transactions
+        // Calculate pending bills (only for this month)
+        const pendingBillsAmount = monthlyTransactions
             .filter(t => t.isPending && !t.isPaid)
             .reduce((sum, t) => sum + t.amount, 0);
+
+        // Calculate bucket balances
+        const bucketBalances: Record<BudgetBucket, number> = {
+            [BudgetBucket.ESSENTIAL]: 0,
+            [BudgetBucket.INVESTMENT]: 0,
+            [BudgetBucket.STABILITY]: 0,
+            [BudgetBucket.REWARDS]: 0,
+            [BudgetBucket.OTHER]: 0,
+        };
+
+        // DUAL LOGIC DISTRIBUTION
+        allTransactions.forEach(t => {
+            if (t.isPending && !t.isPaid) return;
+            const tDate = new Date(t.date);
+            const isTargetMonth = tDate.getFullYear() === year && tDate.getMonth() === (mon - 1);
+
+            if (t.type === TransactionType.INCOME) {
+                if (t.isInvestmentReturn) {
+                    // Cumulative always
+                    bucketBalances[BudgetBucket.INVESTMENT] += t.amount;
+                } else {
+                    // Essential only for current month
+                    if (isTargetMonth) bucketBalances[BudgetBucket.ESSENTIAL] += t.amount * 0.50;
+
+                    // The rest are cumulative
+                    bucketBalances[BudgetBucket.INVESTMENT] += t.amount * 0.25;
+                    bucketBalances[BudgetBucket.STABILITY] += t.amount * 0.15;
+                    bucketBalances[BudgetBucket.REWARDS] += t.amount * 0.10;
+                }
+            } else if (t.type === TransactionType.EXPENSE) {
+                const bId = t.bucketId || BudgetBucket.ESSENTIAL;
+
+                if (bId === BudgetBucket.ESSENTIAL) {
+                    // Essential expenses only substracted in the month they occur
+                    if (isTargetMonth) bucketBalances[bId] -= t.amount;
+                } else {
+                    // Others substract from cumulative
+                    bucketBalances[bId] -= t.amount;
+                }
+            }
+        });
 
         return {
             totalBalance,
@@ -425,7 +521,8 @@ export const getFinancialSummary = async (userId: string, month?: string): Promi
             monthlyExpenses,
             netBalance,
             pendingBillsAmount,
-            expensesByCategory: [] // Placeholder as we removed the logic temporarily or need to fix it
+            expensesByCategory: [],
+            bucketBalances
         };
     } catch (error) {
         console.error('Error getting financial summary:', error);
@@ -582,5 +679,50 @@ export const deleteRecurringDebt = async (debtId: string, userId: string): Promi
     } catch (error) {
         console.error('Error deleting recurring debt:', error);
         throw new Error('Failed to delete recurring debt');
+    }
+};
+
+/**
+ * Reset all budget data for a user
+ * Deletes: accounts, transactions, categories, recurring debts
+ * Does NOT delete: trades, custody_overrides (Dominic calendar)
+ */
+export const resetBudgetData = async (userId: string): Promise<void> => {
+    try {
+        console.log('[resetBudgetData] Starting budget data reset for user:', userId);
+
+        // Helper function to delete documents in batches (Firebase limit: 500 operations per batch)
+        const deleteInBatches = async (collectionPath: string, collectionName: string) => {
+            const snapshot = await getDocs(collection(db, collectionPath));
+            const docs = snapshot.docs;
+            console.log(`[resetBudgetData] Found ${docs.length} ${collectionName} to delete`);
+
+            if (docs.length === 0) return;
+
+            // Process in chunks of 500
+            const BATCH_SIZE = 500;
+            for (let i = 0; i < docs.length; i += BATCH_SIZE) {
+                const batch = writeBatch(db);
+                const chunk = docs.slice(i, i + BATCH_SIZE);
+
+                chunk.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+
+                await batch.commit();
+                console.log(`[resetBudgetData] Deleted ${chunk.length} ${collectionName} (batch ${Math.floor(i / BATCH_SIZE) + 1})`);
+            }
+        };
+
+        // Delete all collections
+        await deleteInBatches(`users/${userId}/accounts`, 'accounts');
+        await deleteInBatches(`users/${userId}/transactions`, 'transactions');
+        await deleteInBatches(`users/${userId}/categories`, 'categories');
+        await deleteInBatches(`users/${userId}/recurringDebts`, 'recurring debts');
+
+        console.log('[resetBudgetData] Budget data reset completed successfully');
+    } catch (error) {
+        console.error('[resetBudgetData] Error resetting budget data:', error);
+        throw error; // Re-throw the original error for better debugging
     }
 };
